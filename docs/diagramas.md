@@ -26,4 +26,11 @@ A análise numérica será conduzida por meio de tabelas contendo valores coleta
 
 Complementarmente, a análise gráfica será realizada por meio de representações visuais, como gráficos de barras, linhas e dispersão, permitindo identificar tendências, padrões e correlações entre variáveis — por exemplo, entre *velocidade média* e *energia consumida*.  
 
-O tempo total de cada execução será calculado a partir dos campos `hora_inicio` e `hora_fim` registrados na entidade **Rota**, conforme a equação:
+O tempo total de cada execução será calculado a partir dos campos `hora_inicio` e `hora_fim` registrados na entidade **Rota**, conforme a equação: *tempo_rota = hora_fim - hora_inicio*
+
+
+Esse indicador possibilita avaliar a eficiência global da rota e identificar possíveis gargalos no percurso.  
+
+Adicionalmente, será gerada uma representação gráfica da trajetória percorrida pelo carrinho, construída a partir das instruções armazenadas na entidade **Instrução**. Cada comando de *giro* ajusta a orientação do veículo, enquanto os comandos de *deslocamento* determinam a progressão em coordenadas `(x,y)`. Os pontos sucessivos serão conectados em um gráfico bidimensional, fornecendo uma visualização intuitiva da rota executada.  
+
+Com essa abordagem, o sistema permite não apenas a avaliação quantitativa das variáveis de desempenho, mas também a interpretação visual do comportamento do veículo em diferentes rotas.
