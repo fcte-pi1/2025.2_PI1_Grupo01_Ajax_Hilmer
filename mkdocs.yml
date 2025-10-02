@@ -2,12 +2,12 @@ site_name: Projeto Integrador de Engenharia I
 site_description: Documentação do produto desenvolvido na disciplina Projeto Integrador de Engenharia I
 site_author: Grupo 01
 
-repo_url: https://github.com/PI1-Ajax-Grupo01/equipe-software
+repo_url: https://github.com/fcte-pi1/2025.2_PI1_Grupo01_Ajax
 repo_name: GitHub
 
 nav:
   - Início: index.md
-  - Diagramas: diagramas.md
+  - Software: software.md
   
   
     
