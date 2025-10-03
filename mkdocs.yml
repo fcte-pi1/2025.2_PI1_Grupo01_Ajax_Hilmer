@@ -1,4 +1,9 @@
 site_name: Projeto Integrador de Engenharia I
+
+plugins:
+  - glightbox
+  - search
+  
 site_description: Documentação do produto desenvolvido na disciplina Projeto Integrador de Engenharia I
 site_author: Grupo 01
 
@@ -7,11 +12,11 @@ repo_name: GitHub
 
 nav:
   - Início: index.md
-  - Software: software.md
+  - Energia: energia/energia.md
+  - Estrutura: estrutura/estrutura.md
+  - Hardware: hardware/hardware.md
+  - Software: software/software.md
   
-  
-    
-
 theme: 
   name: material
   language: pt
