@@ -11,7 +11,7 @@ Para o escopo deste software, identificamos dois atores principais:
 
 O diagrama de caso de uso abaixo ilustra as interações principais entre os atores e o sistema.
 
-![Diagrama de Casos de Uso](diagramas/cdu.png)
+![Diagrama de Casos de Uso](diagramas/dcu.png)
 
 **Cenário de Uso Principal:**
 

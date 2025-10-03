@@ -12,11 +12,11 @@ repo_name: GitHub
 
 nav:
   - Início: index.md
-  - Software: software.md
+  - Energia: energia/energia.md
+  - Estrutura: estrutura/estrutura.md
+  - Hardware: hardware/hardware.md
+  - Software: software/software.md
   
-  
-    
-
 theme: 
   name: material
   language: pt
@@ -51,4 +51,3 @@ theme:
 
 extra_css:
 - assets/css/extra.css
-
