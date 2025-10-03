@@ -103,7 +103,7 @@ Os requisitos não-funcionais definem os atributos de qualidade e as restriçõe
 
 ## Diagrama de Casos de Uso
 
-![Diagrama BPMN](diagramas/diagrama_bpmn.svg)
+![Diagrama BPMN](diagramas/dcu.png)
 
 ## Diagrama Entidade-Relacionamento (DER)
 
