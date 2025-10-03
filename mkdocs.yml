@@ -1,4 +1,9 @@
 site_name: Projeto Integrador de Engenharia I
+
+plugins:
+  - glightbox
+  - search
+  
 site_description: Documentação do produto desenvolvido na disciplina Projeto Integrador de Engenharia I
 site_author: Grupo 01
 
@@ -46,3 +51,4 @@ theme:
 
 extra_css:
 - assets/css/extra.css
+
