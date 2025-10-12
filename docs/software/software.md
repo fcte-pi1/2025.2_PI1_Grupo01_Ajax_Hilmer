@@ -137,3 +137,18 @@ Esse indicador possibilita avaliar a eficiência global da rota e identificar po
 Adicionalmente, será gerada uma representação gráfica da trajetória percorrida pelo carrinho, construída a partir das instruções armazenadas na entidade **Instrução**. Cada comando de *giro* ajusta a orientação do veículo, enquanto os comandos de *deslocamento* determinam a progressão em coordenadas `(x,y)`. Os pontos sucessivos serão conectados em um gráfico bidimensional, fornecendo uma visualização intuitiva da rota executada.  
 
 Com essa abordagem, o sistema permite não apenas a avaliação quantitativa das variáveis de desempenho, mas também a interpretação visual do comportamento do veículo em diferentes rotas.
+
+## Protótipo Funcional do Software
+
+<div style="display:flex; justify-content:center;">
+  <iframe
+    style="border:1px solid rgba(0,0,0,.1);"
+    width="325" height="575"
+    src="https://embed.figma.com/proto/Ghq0pZ1dvuv1xNkvyMa43w/ProjetoSoftwarePI1?node-id=2-2&p=f&t=CXwYJlONPR1RTl9I-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A2&embed-host=share"
+    allowfullscreen>
+  </iframe>
+</div>
+
+<center>
+<a href="https://www.figma.com/design/Ghq0pZ1dvuv1xNkvyMa43w/ProjetoSoftwarePI1?node-id=0-1&p=f&t=3yl7xwVXyUSETxdb-0">Clique aqui para acessar o protótipo</a>
+</center>
