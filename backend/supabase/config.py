@@ -10,6 +10,5 @@ SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # TESTE:
-
-response = supabase.table('Teste').select('*').execute()
-print(response.data)
+# response = supabase.table('Teste').select('*').execute()
+# print(response.data)
