@@ -6,9 +6,11 @@ from sqlalchemy.orm import Mapped, mapped_column, registry
 
 table_registry = registry()
 
+
 class StatusState(str, Enum):
     success = 'success'
     failed = 'failed'
+
 
 @table_registry.mapped_as_dataclass
 class Route:
