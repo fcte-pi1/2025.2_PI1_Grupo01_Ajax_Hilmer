@@ -119,7 +119,7 @@ async def delete_route(route_id: int, session: Session):
     if db_route:
         await session.delete(db_route)
         await session.commit()
-        return {'message': 'Router deleted'}
+        return {'message': 'Route deleted'}
 
     raise HTTPException(
         status_code=HTTPStatus.NOT_FOUND, detail='Route not found'
