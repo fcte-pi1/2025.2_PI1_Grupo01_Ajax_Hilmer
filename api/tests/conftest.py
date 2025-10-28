@@ -10,7 +10,7 @@ from sqlalchemy.pool import StaticPool
 
 from api.app import app
 from api.database import get_session
-from api.models import table_registry
+from api.models import Route, table_registry
 
 
 @pytest.fixture
@@ -41,6 +41,22 @@ async def session():
 
     async with engine.begin() as conn:
         await conn.run_sync(table_registry.metadata.drop_all)
+
+
+# seguir o mesmo exemplo para telemetry
+@pytest_asyncio.fixture
+async def route(session: AsyncSession):
+    route = Route(
+        commands='ANDAR 50 CM, GIRAR 90 GRAUS DIREITA, ANDAR 20 CM,'
+        'GIRAR 90 GRAUS DIREITA, ANDAR 35 CM, GIRAR 45 GRAUS ESQUERDA,'
+        'ENTREGAR'
+    )
+
+    session.add(route)
+    await session.commit()
+    await session.refresh(route)
+
+    return route
 
 
 @contextmanager

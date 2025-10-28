@@ -73,7 +73,7 @@ async def create_route(route: RouteSchema, session: Session):
     new_route = Route(commands=route.commands)
 
     session.add(new_route)
-    await session.commit(new_route)
+    await session.commit()
     await session.refresh(new_route)
 
     return new_route
