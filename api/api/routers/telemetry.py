@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.database import get_session
-from api.models import Telemetry
+from api.models import Route, Telemetry
 from api.schemas import (
     FilterPage,
     Message,
@@ -65,20 +65,27 @@ async def read_telemetry(telemetry_id: int, session: Session):
 async def create_telemetry(
     telemetry: TelemetrySchema, session: Session, route_id: int
 ):
-    new_telemetry = Telemetry(
-        average_speed=telemetry.average_current,
-        distance_traveled=telemetry.distance_traveled,
-        energy_consumed=telemetry.energy_consumed,
-        average_current=telemetry.average_current,
-        status=telemetry.status,
-        route_id=route_id,
+    db_route = await session.scalar(select(Route).where(Route.id == route_id))
+
+    if db_route:
+        new_telemetry = Telemetry(
+            average_speed=telemetry.average_speed,
+            distance_traveled=telemetry.distance_traveled,
+            energy_consumed=telemetry.energy_consumed,
+            average_current=telemetry.average_current,
+            status=telemetry.status,
+            route_id=route_id,
+        )
+
+        session.add(new_telemetry)
+        await session.commit()
+        await session.refresh(new_telemetry)
+
+        return new_telemetry
+
+    raise HTTPException(
+        status_code=HTTPStatus.NOT_FOUND, detail='Route not found'
     )
-
-    session.add(new_telemetry)
-    await session.commit()
-    await session.refresh(new_telemetry)
-
-    return new_telemetry
 
 
 @router.delete(
