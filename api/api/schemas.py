@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from api.models import StatusState
+
 
 class RouteSchema(BaseModel):
     commands: str
@@ -23,7 +25,7 @@ class TelemetrySchema(BaseModel):
     distance_traveled: float
     energy_consumed: float
     average_current: float
-    status: str
+    status: StatusState
 
 
 class TelemetryPublic(TelemetrySchema):

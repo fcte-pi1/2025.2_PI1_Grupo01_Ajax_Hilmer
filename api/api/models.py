@@ -1,10 +1,14 @@
 from datetime import datetime
+from enum import Enum
 
 from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, registry
 
 table_registry = registry()
 
+class StatusState(str, Enum):
+    success = 'success'
+    failed = 'failed'
 
 @table_registry.mapped_as_dataclass
 class Route:
@@ -29,7 +33,7 @@ class Telemetry:
     distance_traveled: Mapped[float]
     energy_consumed: Mapped[float]
     average_current: Mapped[float]
-    status: Mapped[str]
+    status: Mapped[StatusState]
     created_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now()
     )
