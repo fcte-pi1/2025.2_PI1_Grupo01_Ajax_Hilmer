@@ -26,7 +26,7 @@ Session = Annotated[AsyncSession, Depends(get_session)]
 @router.get(
     '/',
     status_code=HTTPStatus.OK,
-    response_model=RoutePublic,
+    response_model=RoutePublicList,
     response_class=JSONResponse,
 )
 async def read_routes(session: Session, filter: Filter):
@@ -40,7 +40,7 @@ async def read_routes(session: Session, filter: Filter):
 @router.get(
     '/{route_id}',
     status_code=HTTPStatus.OK,
-    response_model=RoutePublicList,
+    response_model=RoutePublic,
     response_class=JSONResponse,
 )
 async def read_route(route_id: int, session: Session):
