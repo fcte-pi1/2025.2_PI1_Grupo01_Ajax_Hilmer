@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import func, ForeignKey
+from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, registry
-
 
 table_registry = registry()
 
@@ -10,7 +9,7 @@ table_registry = registry()
 @table_registry.mapped_as_dataclass
 class Route:
     __tablename__ = 'routes'
-    
+
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     commands: Mapped[str] = mapped_column(unique=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -22,10 +21,9 @@ class Route:
 
 
 @table_registry.mapped_as_dataclass
-
 class Telemetry:
     __tablename__ = 'telemetries'
-    
+
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     average_speed: Mapped[float]
     distance_traveled: Mapped[float]

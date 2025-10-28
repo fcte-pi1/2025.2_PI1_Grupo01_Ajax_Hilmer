@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from fastapi.testclient import TestClient
+
 from api.schemas import (
     Message,
     TelemetryPublic,

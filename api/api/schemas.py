@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RouteSchema(BaseModel):
@@ -11,6 +11,7 @@ class RoutePublic(RouteSchema):
     id: int
     created_at: datetime
     updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RoutePublicList(RoutePublic):
@@ -28,6 +29,7 @@ class TelemetrySchema(BaseModel):
 class TelemetryPublic(TelemetrySchema):
     id: int
     created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TelemetryPublicList(TelemetryPublic):
@@ -36,3 +38,8 @@ class TelemetryPublicList(TelemetryPublic):
 
 class Message(BaseModel):
     message: str
+
+
+class FilterPage(BaseModel):
+    offset: int = Field(ge=0, default=0)
+    limit: int = Field(ge=0, default=10)
