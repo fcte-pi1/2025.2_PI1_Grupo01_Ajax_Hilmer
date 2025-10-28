@@ -16,7 +16,7 @@ from api.schemas import (
     TelemetrySchema,
 )
 
-router = APIRouter(prefix='telemetries', tags=['telemetries'])
+router = APIRouter(prefix='/telemetries', tags=['telemetries'])
 
 
 Filter = Annotated[FilterPage, Query()]

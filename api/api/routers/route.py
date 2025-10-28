@@ -17,7 +17,7 @@ from api.schemas import (
     RouteSchema,
 )
 
-router = APIRouter(prefix='routes', tags=['routes'])
+router = APIRouter(prefix='/routes', tags=['routes'])
 
 Filter = Annotated[FilterPage, Query()]
 Session = Annotated[AsyncSession, Depends(get_session)]
