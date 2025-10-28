@@ -12,7 +12,7 @@ class RoutePublic(RouteSchema):
     model_config = ConfigDict(from_attributes=True)
 
 
-class RoutePublicList(RoutePublic):
+class RoutePublicList(BaseModel):
     routes: list[RoutePublic]
 
 
@@ -29,7 +29,7 @@ class TelemetryPublic(TelemetrySchema):
     model_config = ConfigDict(from_attributes=True)
 
 
-class TelemetryPublicList(TelemetryPublic):
+class TelemetryPublicList(BaseModel):
     telemetries: list[TelemetryPublic]
 
 
