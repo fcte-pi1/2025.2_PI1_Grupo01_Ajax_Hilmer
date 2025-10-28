@@ -1,6 +1,9 @@
 # --- lib/ble_manager.py A classe dedicada para gerenciar toda a lógica de conexão e comunicação Bluetooth.---
 import ubluetooth
-import struct
+
+_IRQ_CENTRAL_CONNECT = 1
+_IRQ_CENTRAL_DISCONNECT = 2
+_IRQ_GATTS_WRITE = 3
 
 class BLEManager:
     def __init__(self, ble, name, service_uuid, cmd_uuid, data_uuid):
@@ -8,7 +11,6 @@ class BLEManager:
         self._ble.active(True)
         self._ble.irq(self._irq)
 
-        # UUIDs
         self._service_uuid = ubluetooth.UUID(service_uuid)
         self._char_cmd_uuid = ubluetooth.UUID(cmd_uuid)
         self._char_data_uuid = ubluetooth.UUID(data_uuid)
@@ -32,18 +34,19 @@ class BLEManager:
         self.command_handler_callback = None
 
     def _irq(self, event, data):
-        if event == 1: # _IRQ_CENTRAL_CONNECT
+        if event == _IRQ_CENTRAL_CONNECT: 
             conn_handle, _, _ = data
             self._connections.add(conn_handle)
             print("BLE Conectado")
-            self._ble.gap_advertise(None) # Parar de anunciar
-        elif event == 2: # _IRQ_CENTRAL_DISCONNECT
+            self._ble.gap_advertise(None) 
+
+        elif event == _IRQ_CENTRAL_DISCONNECT:
             conn_handle, _, _ = data
-            if conn_handle in self._connections:
-                self._connections.remove(conn_handle)
+            self._connections.discard(conn_handle)
             print("BLE Desconectado")
             self._advertise()
-        elif event == 3: # _IRQ_GATTS_WRITE
+            
+        elif event == _IRQ_GATTS_WRITE:
             conn_handle, value_handle = data
             if value_handle == self._handle_cmd:
                 command = self._ble.gatts_read(self._handle_cmd).decode('utf-8')
@@ -55,9 +58,16 @@ class BLEManager:
         self._ble.gap_advertise(interval_us, adv_data=self._payload)
 
     def send_data(self, data_dict):
-        # Serializa dados. Ex: "dist:10.5,volt:5.1,curr:150"
         data_str = ",".join([f"{k}:{v}" for k, v in data_dict.items()])
+        data_bytes = data_str.encode('utf-8')
         
-        self._ble.gatts_write(self._handle_data, data_str.encode('utf-8'))
-        for conn_handle in self._connections:
-            self._ble.gatts_notify(conn_handle, self._handle_data)
+        try:
+            self._ble.gatts_write(self._handle_data, data_bytes)
+            
+            for conn_handle in self._connections:
+                try:
+                    self._ble.gatts_notify(conn_handle, self._handle_data)
+                except OSError as e:
+                    pass 
+        except OSError as e:
+             print(f"Erro de escrita BLE (falha de buffer/conexão?): {e}")
