@@ -40,13 +40,24 @@ async def main_control_loop(ble_manager, motors, hardware):
                 motors.direita()
             elif cmd == 'PARAR':
                 motors.parar()
-            elif cmd.startswith('SERVO_A:'): # Comando: "SERVO_A:90"
+            elif cmd.startswith('SERVO_'): # Comando: "SERVO_A:90"
                 try:
-                    angle = int(cmd.split(':')[1])
-                    hardware['servo_a'].set_angle(angle)
+                    parts = cmd.split(':')
+                    servo_id = parts[0] 
+                    angle = int(parts[1]) 
+
+                    if servo_id == 'SERVO_A':
+                        await hardware['servo_a'].move_to_angle(angle)
+                    elif servo_id == 'SERVO_B':
+                        await hardware['servo_b'].move_to_angle(angle)
+                    elif servo_id == 'SERVO_C':
+                        await hardware['servo_c'].move_to_angle(angle)
+                    elif servo_id == 'SERVO_D':
+                        await hardware['servo_d'].move_to_angle(angle)
+                    elif servo_id == 'SERVO_E':
+                        await hardware['servo_e'].move_to_angle(angle)
                 except Exception:
-                    print("Comando servo A inválido")
-            # ... adicione comandos para os servos B, C, D, E ...
+                    print("Comando servo inválido")                    
 
         # --- 2. Ler Todos os Sensores ---
         distance = hardware['hc_sr04'].get_distance_cm()
@@ -106,6 +117,9 @@ async def main():
     # Posição inicial dos servos
     hardware['servo_a'].set_angle(90)
     hardware['servo_b'].set_angle(90)
+    hardware['servo_c'].set_angle(90)
+    hardware['servo_d'].set_angle(90)
+    hardware['servo_e'].set_angle(90)
 
     # 4. Inicializar BLE
     ble = ubluetooth.BLE()
