@@ -27,10 +27,16 @@ poetry install
 
 > Algumas dependências de desenvolvimento foram utilizadas: `ruff` e `taskipy`
 
-**Antes de rodar qualquer parte do código, sempre utilize o seguinte comando para formatar o código de acordo com os padrões estabelecidos**
+- **Antes de rodar qualquer parte do código, sempre utilize o seguinte comando para formatar o código de acordo com os padrões estabelecidos**
 
 ```bash
 task format
+```
+
+**Para rodar os testes, utilize o seguinte comando:**
+
+```bash
+task test
 ```
 
 **Para rodar o backend, utilize o seguinte comando:**
@@ -39,8 +45,10 @@ task format
 task run
 ```
 
-**Para rodar os testes, utilize o seguinte comando:**
+Para acessar a API só abrir o seguinte link depois que rodar o servidor:
 
-```bash
-task test
-```
+[http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+Para acessar a documentação (Swagger) da aplicação:
+
+[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
