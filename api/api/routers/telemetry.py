@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.database import get_session
-from api.models import Route, Telemetry
+from api.models import Telemetry
 from api.schemas import (
     FilterPage,
     Message,
@@ -57,13 +57,13 @@ async def read_telemetry(telemetry_id: int, session: Session):
 
 
 @router.post(
-    '/',
+    '/{route_id}',
     status_code=HTTPStatus.CREATED,
     response_model=TelemetryPublic,
     response_class=JSONResponse,
 )
 async def create_telemetry(
-    telemetry: TelemetrySchema, session: Session, route: Route
+    telemetry: TelemetrySchema, session: Session, route_id: int
 ):
     new_telemetry = Telemetry(
         average_speed=telemetry.average_current,
@@ -71,7 +71,7 @@ async def create_telemetry(
         energy_consumed=telemetry.energy_consumed,
         average_current=telemetry.average_current,
         status=telemetry.status,
-        route_id=route.id,
+        route_id=route_id,
     )
 
     session.add(new_telemetry)
