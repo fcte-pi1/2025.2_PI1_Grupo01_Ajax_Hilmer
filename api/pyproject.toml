@@ -59,8 +59,4 @@ format = 'ruff format'
 run = 'fastapi dev api/app.py'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=api -vv'
-<<<<<<< HEAD
 post_test = 'coverage html'
-=======
-post_test = 'coverage html'
->>>>>>> feat/backend
