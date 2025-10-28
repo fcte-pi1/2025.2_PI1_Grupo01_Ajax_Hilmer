@@ -9,6 +9,8 @@ class RouteSchema(BaseModel):
 
 class RoutePublic(RouteSchema):
     id: int
+    created_at: datetime
+    updated_at: datetime
 
 
 class RoutePublicList(RoutePublic):

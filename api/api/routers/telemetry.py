@@ -43,16 +43,6 @@ async def create_telemetry(telemetry: TelemetrySchema):
     pass
 
 
-@router.put(
-    '/{telemetry_id}',
-    status_code=HTTPStatus.OK,
-    response_model=TelemetryPublic,
-    response_class=JSONResponse,
-)
-async def update_telemetry(telemetry_id: int, telemetry: TelemetrySchema):
-    pass
-
-
 @router.delete(
     '/{telemetry_id}',
     status_code=HTTPStatus.OK,
