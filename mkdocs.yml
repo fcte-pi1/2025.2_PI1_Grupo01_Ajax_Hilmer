@@ -1,0 +1,56 @@
+site_name: Projeto Integrador de Engenharia I
+
+plugins:
+  - glightbox
+  - search
+  
+site_description: Documentação do produto desenvolvido na disciplina Projeto Integrador de Engenharia I
+site_author: Grupo 01
+
+repo_url: https://github.com/fcte-pi1/2025.2_PI1_Grupo01_Ajax
+repo_name: GitHub
+
+nav:
+  - Início: index.md
+  - Energia: energia/energia.md
+  - Estrutura: estrutura/estrutura.md
+  - Hardware: hardware/hardware.md
+  - Software: software/software.md
+  
+theme: 
+  name: material
+  language: pt
+
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+
+  icon:
+    repo: fontawesome/brands/github
+
+extra_css:
+- assets/css/extra.css
+
+extra:
+  generator: false
