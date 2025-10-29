@@ -13,6 +13,8 @@ A estrutura principal é a seguinte:
 └── README.md # Este arquivo
 ```
 
+**README DO BACKEND [AQUI](https://github.com/fcte-pi1/2025.2_PI1_Grupo01_Ajax_Hilmer/blob/main/api/README.md)**
+
 > A estrutura do projeto descrita acima sofrerá mudanças ao longo do projeto
 
 ## Fluxo de Trabalho com Git
