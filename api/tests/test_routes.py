@@ -109,4 +109,3 @@ def test_delete_route_correct(client, route):
     response = client.delete(f'/routes/{route.id}')
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'message': 'Route deleted'}
-from http import HTTPStatus
