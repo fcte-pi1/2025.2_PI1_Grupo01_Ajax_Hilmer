@@ -24,12 +24,13 @@ A estrutura principal é a seguinte:
 2. **Atualize sua branch antes de enviar alterações**  
    - Antes de abrir um *pull request*, garanta que sua branch está atualizada com a `main`.  
    - Comandos recomendados:
-     ```bash
-     git checkout main
-     git pull origin main
-     git checkout sua-branch
-     git merge main
-     ```
+
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout sua-branch
+   git merge main
+   ```
 
 3. **Crie *Pull Requests* (PRs)**  
    - Depois de finalizar as alterações, crie um PR para a `main`.  
