@@ -41,6 +41,23 @@ task format
 task test
 ```
 
+> Cobertura de testes atualmente em 99%
+
+```bash
+Name                       Stmts   Miss  Cover
+----------------------------------------------
+api/__init__.py                0      0   100%
+api/app.py                     5      0   100%
+api/database.py                6      2    67%
+api/models.py                 26      0   100%
+api/routers/route.py          53      0   100%
+api/routers/telemetry.py      40      0   100%
+api/schemas.py                25      0   100%
+api/settings.py                4      0   100%
+----------------------------------------------
+TOTAL                        159      2    99%
+```
+
 **Para rodar o backend, utilize o seguinte comando:**
 
 ```bash
