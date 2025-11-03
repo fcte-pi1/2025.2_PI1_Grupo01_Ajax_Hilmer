@@ -1,14 +1,6 @@
-name: ci 
+name: pipeline
 
-on:
-  push:
-    branches: 
-      - main
-      - upgrade/backend
-    paths:
-      - 'docs/**'        
-      - 'mkdocs.yml'
-      - 'api/**'     
+on: [push, pull_request]    
 
 permissions:
   contents: write
