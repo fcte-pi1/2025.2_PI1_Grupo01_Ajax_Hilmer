@@ -1,8 +1,8 @@
-"""create tables routes and telemetries
+"""create tables
 
-Revision ID: 28a82b90b81e
+Revision ID: a1f39d76406a
 Revises: 
-Create Date: 2025-10-28 13:27:09.374740
+Create Date: 2025-11-02 21:01:20.315512
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '28a82b90b81e'
+revision: str = 'a1f39d76406a'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,8 +24,8 @@ def upgrade() -> None:
     op.create_table('routes',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('commands', sa.String(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('commands')
     )
@@ -35,8 +35,8 @@ def upgrade() -> None:
     sa.Column('distance_traveled', sa.Float(), nullable=False),
     sa.Column('energy_consumed', sa.Float(), nullable=False),
     sa.Column('average_current', sa.Float(), nullable=False),
-    sa.Column('status', sa.String(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('status', sa.Enum('success', 'failed', name='statusstate'), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('route_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['route_id'], ['routes.id'], ),
     sa.PrimaryKeyConstraint('id')

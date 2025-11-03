@@ -16,7 +16,10 @@ def test_create_route(client):
     )
 
     assert response.status_code == HTTPStatus.CREATED
-    assert response.json() == {'id': 1, 'commands': commands}
+    assert response.json() == {
+        'id': 1,
+        'commands': commands,
+    }
 
 
 def test_read_routes(client, route):

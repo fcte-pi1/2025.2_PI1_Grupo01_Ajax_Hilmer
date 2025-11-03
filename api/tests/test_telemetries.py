@@ -9,10 +9,10 @@ def test_create_telemetry(client, route):
     energy_consumed = 100
     average_current = 100
     status = 'success'
-    route_id = 1
+    route_id = route.id
 
     response = client.post(
-        '/telemetries/1',
+        f'/telemetries/{route.id}',
         json={
             'average_speed': average_speed,
             'distance_traveled': distance_traveled,
