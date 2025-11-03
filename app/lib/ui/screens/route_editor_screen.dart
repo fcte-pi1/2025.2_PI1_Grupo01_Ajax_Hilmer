@@ -105,6 +105,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   Future<void> _startRoute() async {
+    // 1. Validações iniciais (antes de mostrar o pop-up)
     if (_isSending) return; // Evita envio duplo
     if (_commands.isEmpty) {
       _showFeedbackSnackBar(
@@ -114,55 +115,172 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
       return;
     }
 
-    setState(() {
-      _isSending = true;
-    }); // Inicia estado de envio
-    final String commandsString = _commands
-        .map((cmd) => cmd.toString())
-        .join(', ');
-    print("[RouteEditor] Iniciando percurso com string: $commandsString");
+    // 2. Mostra o Pop-up de Confirmação (AlertDialog)
+    final bool? wantsToStart = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true, // Permite fechar clicando fora
+      builder: (BuildContext dialogContext) {
+        // AlertDialog é o widget do pop-up
+        return AlertDialog(
+          // Estilização para bater com o Figma
+          backgroundColor: const Color(0xFF191C23), // Fundo cinza escuro
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+            side: BorderSide(color: const Color(0xFF33DDFF), width: 1),
+          ),
+          title: const Text(
+            'Deseja iniciar o percurso?',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              color: Colors.white,
+            ),
+          ),
+          // actions são os botões na parte inferior
+          actionsAlignment:
+              MainAxisAlignment.center, // Centraliza a Row de botões
+          actionsPadding: const EdgeInsets.only(
+            left: 20,
+            right: 20,
+            bottom: 20,
+            top: 10,
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Centraliza os botões
+              children: [
+                // Botão "Sim" (Azul Ciano)
+                SizedBox(
+                  width: 120, // Largura fixa como no Figma
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF33DDFF), // Ciano
+                      foregroundColor: const Color(0xFF0D0F14), // Texto escuro
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                      ), // Altura interna
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'Sim',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    onPressed: () {
+                      // Fecha o pop-up e retorna 'true'
+                      Navigator.of(dialogContext).pop(true);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 15), // Espaço entre os botões
+                // Botão "Não" (Outlined)
+                SizedBox(
+                  width: 120, // Largura fixa como no Figma
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: Colors.white.withOpacity(0.5),
+                        width: 1.5,
+                      ), // Borda cinza
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                      ), // Altura interna
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'Não',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    onPressed: () {
+                      // Fecha o pop-up e retorna 'false'
+                      Navigator.of(dialogContext).pop(false);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+    // --- Fim da lógica do Pop-up ---
 
-    // Tenta salvar no backend
-    bool savedToApi = await _apiService.saveRoute(commandsString);
-    if (mounted) {
-      _showFeedbackSnackBar(
-        savedToApi
-            ? 'Rota salva no servidor com sucesso.'
-            : 'Falha ao salvar rota no servidor.',
-        isError: !savedToApi,
-      );
+    // 3. Verifica o resultado do pop-up
+    if (wantsToStart != true) {
+      print("[RouteEditor] Início do percurso cancelado pelo usuário.");
+      return; // Usuário clicou em "Não" ou fora do pop-up, então paramos aqui.
     }
-    // Decide se continua mesmo sem salvar API (aqui estamos continuando)
-    await Future.delayed(const Duration(milliseconds: 300));
 
-    // Envia para o carrinho via BLE
-    if (mounted) {
-      // Verifica novamente se a tela ainda existe
-      bool sentToDevice = await _bleManager.sendTrajectory(commandsString);
-      if (sentToDevice) {
-        print("[RouteEditor] Comandos enviados para o carrinho.");
-        if (mounted)
-          _showFeedbackSnackBar(
-            'Comandos enviados para o carrinho!',
-            isError: false,
-            color: Colors.blueAccent,
-          );
-        // TODO: Após enviar, ir para tela de executando percurso
-      } else {
-        print("[RouteEditor] Falha ao enviar comandos.");
-        if (mounted)
-          _showFeedbackSnackBar(
-            "Falha ao enviar comandos para o carrinho.",
-            isError: true,
-          );
-      }
-    }
-
-    // Finaliza estado de envio (se a tela ainda existir)
-    if (mounted)
+    // 4. Se o usuário clicou "Sim", continua com a lógica de envio
+    try {
       setState(() {
-        _isSending = false;
-      });
+        _isSending = true;
+      }); // Inicia estado de envio
+      final String commandsString = _commands
+          .map((cmd) => cmd.toString())
+          .join(', ');
+      print(
+        "[RouteEditor] Iniciando percurso (confirmado) com string: $commandsString",
+      );
+
+      // Tenta salvar no backend
+      bool savedToApi = await _apiService.saveRoute(commandsString);
+      if (mounted) {
+        _showFeedbackSnackBar(
+          savedToApi
+              ? 'Rota salva no servidor com sucesso.'
+              : 'Falha ao salvar rota no servidor.',
+          isError: !savedToApi,
+        );
+      }
+      // Decide se continua mesmo sem salvar API (aqui estamos continuando)
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      // Envia para o carrinho via BLE
+      if (mounted) {
+        // Verifica novamente se a tela ainda existe
+        bool sentToDevice = await _bleManager.sendTrajectory(commandsString);
+        if (sentToDevice) {
+          print("[RouteEditor] Comandos enviados para o carrinho.");
+          if (mounted)
+            _showFeedbackSnackBar(
+              'Comandos enviados para o carrinho!',
+              isError: false,
+              color: Colors.blueAccent,
+            );
+          // TODO: Após enviar, ir para tela de executando percurso
+        } else {
+          print("[RouteEditor] Falha ao enviar comandos.");
+          if (mounted)
+            _showFeedbackSnackBar(
+              "Falha ao enviar comandos para o carrinho.",
+              isError: true,
+            );
+        }
+      }
+    } catch (e) {
+      print("[RouteEditor] Erro na execução da rota: $e");
+      if (mounted)
+        _showFeedbackSnackBar("Ocorreu um erro inesperado.", isError: true);
+    } finally {
+      // 5. Garante que o estado de envio seja resetado
+      if (mounted)
+        setState(() {
+          _isSending = false;
+        });
+    }
   }
 
   void _viewPreviousRoutes() {
@@ -237,35 +355,61 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                   fontWeight: FontWeight.w300,
                 ),
               ),
-              const SizedBox(height: 20),
-              // Input de Distância
-              _buildInputCommandRow(
-                label: 'Distância (cm)',
-                controller: _distanceController,
-                onAdd: () => _addCommand(CommandType.andar),
-                icon: Icons.arrow_forward,
-                enabled: !_isSending, // Desabilita se estiver enviando
-              ),
-              const SizedBox(height: 20),
-              // Input de Girar
-              _buildInputCommandRow(
-                label: 'Girar (graus)',
-                controller: _angleController,
-                onAdd: () => _addCommand(CommandType.girar),
-                icon: Icons.rotate_right,
-                enabled: !_isSending, // Desabilita se estiver enviando
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               Text(
-                'Valores positivos: direita | negativos: Esquerda',
-                style: textTheme.bodySmall,
+                '*ao final da rota, o carrinho depositará o objeto.',
+                textAlign: TextAlign.center,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w200,
+                ),
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF191C23),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.white12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildInputCommandRow(
+                      label: 'Distância (cm)',
+                      controller: _distanceController,
+                      onAdd: () => _addCommand(CommandType.andar),
+                      icon: Icons.arrow_forward,
+                      enabled: !_isSending,
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ), // Espaço REDUZIDO entre os inputs
+                    _buildInputCommandRow(
+                      label: 'Girar (graus)',
+                      controller: _angleController,
+                      onAdd: () => _addCommand(CommandType.girar),
+                      icon: Icons.rotate_right,
+                      enabled: !_isSending,
+                    ),
+                    const SizedBox(height: 10), // Espaço antes da legenda
+                    Padding(
+                      // Adiciona padding para alinhar com o texto do label
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: Text(
+                        'Valores positivos: direita | negativos: esquerda',
+                        style: textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 40),
 
               //seção do percurso atual
               Text(
                 'Percurso (${_commands.length} passos)',
+                textAlign: TextAlign.center,
                 style: textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),

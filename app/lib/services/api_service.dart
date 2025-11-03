@@ -11,8 +11,7 @@ class ApiService {
     if (Platform.isAndroid) {
       _baseUrl = "http://10.0.2.2:8000"; // IP especial do emulador para localhost da máquina host
     } else {
-      // TODO: Substituir pelo ip da maquina local
-      _baseUrl = "http://localhost:8000"; // Ex: http://192.168.1.10:8000
+      _baseUrl = "http://localhost:8000";
     }
      print("[ApiService] Usando baseURL: $_baseUrl");
   }
