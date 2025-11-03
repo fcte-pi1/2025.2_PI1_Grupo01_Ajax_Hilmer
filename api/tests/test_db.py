@@ -29,11 +29,12 @@ async def test_create_route_db(session: AsyncSession, mock_db_time):
             'commands': commands,
             'created_at': time,
             'updated_at': time,
+            'telemetries': [],
         }
 
 
 @pytest.mark.asyncio
-async def test_create_telemetry_db(session: AsyncSession, mock_db_time):
+async def test_create_telemetry_db(session: AsyncSession, mock_db_time, route):
     with mock_db_time(model=Telemetry) as time:
         new_telemetry = Telemetry(
             average_speed=10,
@@ -41,7 +42,7 @@ async def test_create_telemetry_db(session: AsyncSession, mock_db_time):
             energy_consumed=100,
             average_current=100,
             status='success',
-            route_id=1,
+            route_id=route.id,
         )
 
         session.add(new_telemetry)
