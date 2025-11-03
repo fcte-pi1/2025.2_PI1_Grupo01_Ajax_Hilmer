@@ -7,7 +7,8 @@ on:
       - upgrade/backend
     paths:
       - 'docs/**'        
-      - 'mkdocs.yml'     
+      - 'mkdocs.yml'
+      - 'api/**'     
 
 permissions:
   contents: write
