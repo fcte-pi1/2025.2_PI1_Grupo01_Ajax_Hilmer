@@ -19,7 +19,7 @@ pipx install poetry
 pipx inject poetry poetry-plugin-shell
 ```
 
-#### Para instalar as demais dependências, entre na mesma pasta do `pyproject.toml` e rode os seguintes comandos
+#### Para instalar as demais dependências, esteja no mesmo `*path*` do `pyproject.toml` e rode os seguintes comandos
 
 ```bash
 poetry install
@@ -41,67 +41,34 @@ task format
 task test
 ```
 
-> Cobertura de testes atualmente em 99%
+> Cobertura de testes atualmente em 100%
 
 ```bash
 Name                       Stmts   Miss  Cover
 ----------------------------------------------
 api/__init__.py                0      0   100%
 api/app.py                     5      0   100%
-api/database.py                6      2    67%
-api/models.py                 26      0   100%
+api/database.py                3      0   100%
+api/models.py                 28      0   100%
 api/routers/route.py          53      0   100%
 api/routers/telemetry.py      40      0   100%
 api/schemas.py                25      0   100%
 api/settings.py                4      0   100%
 ----------------------------------------------
-TOTAL                        159      2    99%
+TOTAL                        158      0   100%
 ```
 
-**Para rodar o backend, utilize o seguinte comando:**
+**Para subir o backend:**
 
 ```bash
-task run
+docker compose up --build
 ```
 
 Para acessar a API só abrir o seguinte link depois que rodar o servidor:
 
-[http://127.0.0.1:8000](http://127.0.0.1:8000)
+[http://0.0.0.0:8000/](http://0.0.0.0:8000/)
 
 Para acessar a documentação (Swagger) da aplicação:
 
-[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+[http://0.0.0.0:8000/docs](http://0.0.0.0:8000/docs)
 
-## Organização do Projeto
-
-O backend do projeto está organizado da seguinte forma:
-
-```bash
-├── alembic.ini
-├── api
-│   ├── app.py
-│   ├── database.py
-│   ├── models.py
-│   ├── routers
-│   │   ├── route.py
-│   │   └── telemetry.py
-│   ├── schemas.py
-│   └── settings.py
-├── database.db
-├── htmlcov
-├── migrations
-│   ├── env.py
-│   ├── script.py.mako
-│   └── versions
-├── poetry.lock
-├── pyproject.toml
-├── README.md
-└── tests
-    ├── conftest.py
-    ├── __init__.py
-    ├── test_db.py
-    └── test_routes.py
-    └── test_telemetries.py
-```
-
-> Para gerar a estrutura do projeto, basta rodar o seguinte comando: `tree -I '__pycache__|.git|*.pyc'`
