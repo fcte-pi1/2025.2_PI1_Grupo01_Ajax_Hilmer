@@ -36,12 +36,10 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   void _setupConnectionLostListener() {
-    // Apenas registra a função _handleConnectionLost como listener
     _bleManager.connectionState.removeListener(_handleConnectionLost);
     _bleManager.connectionState.addListener(_handleConnectionLost);
   }
 
-  // Nova função _handleConnectionLost (contém a lógica)
   void _handleConnectionLost() {
     final state = _bleManager.connectionState.value;
     print("[RouteEditor] Listener: Estado mudou para $state");
@@ -105,7 +103,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   Future<void> _startRoute() async {
-    // 1. Validações iniciais (antes de mostrar o pop-up)
     if (_isSending) return; // Evita envio duplo
     if (_commands.isEmpty) {
       _showFeedbackSnackBar(
@@ -120,10 +117,8 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
       context: context,
       barrierDismissible: true, // Permite fechar clicando fora
       builder: (BuildContext dialogContext) {
-        // AlertDialog é o widget do pop-up
         return AlertDialog(
-          // Estilização para bater com o Figma
-          backgroundColor: const Color(0xFF191C23), // Fundo cinza escuro
+          backgroundColor: const Color(0xFF191C23), 
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
             side: BorderSide(color: const Color(0xFF33DDFF), width: 1),
@@ -151,16 +146,16 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
               mainAxisAlignment:
                   MainAxisAlignment.center, // Centraliza os botões
               children: [
-                // Botão "Sim" (Azul Ciano)
+                //botão 'Sim'
                 SizedBox(
-                  width: 120, // Largura fixa como no Figma
+                  width: 120, 
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF33DDFF), // Ciano
-                      foregroundColor: const Color(0xFF0D0F14), // Texto escuro
+                      backgroundColor: const Color(0xFF33DDFF), 
+                      foregroundColor: const Color(0xFF0D0F14), 
                       padding: const EdgeInsets.symmetric(
                         vertical: 14,
-                      ), // Altura interna
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -173,15 +168,14 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                       ),
                     ),
                     onPressed: () {
-                      // Fecha o pop-up e retorna 'true'
                       Navigator.of(dialogContext).pop(true);
                     },
                   ),
                 ),
-                const SizedBox(width: 15), // Espaço entre os botões
-                // Botão "Não" (Outlined)
+                const SizedBox(width: 15),
+                //botão "Não"
                 SizedBox(
-                  width: 120, // Largura fixa como no Figma
+                  width: 120, 
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
@@ -191,7 +185,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         vertical: 14,
-                      ), // Altura interna
+                      ), 
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -204,7 +198,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                       ),
                     ),
                     onPressed: () {
-                      // Fecha o pop-up e retorna 'false'
                       Navigator.of(dialogContext).pop(false);
                     },
                   ),
@@ -215,19 +208,15 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
         );
       },
     );
-    // --- Fim da lógica do Pop-up ---
-
-    // 3. Verifica o resultado do pop-up
     if (wantsToStart != true) {
       print("[RouteEditor] Início do percurso cancelado pelo usuário.");
-      return; // Usuário clicou em "Não" ou fora do pop-up, então paramos aqui.
+      return; 
     }
 
-    // 4. Se o usuário clicou "Sim", continua com a lógica de envio
     try {
       setState(() {
         _isSending = true;
-      }); // Inicia estado de envio
+      }); 
       final String commandsString = _commands
           .map((cmd) => cmd.toString())
           .join(', ');
@@ -235,7 +224,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
         "[RouteEditor] Iniciando percurso (confirmado) com string: $commandsString",
       );
 
-      // Tenta salvar no backend
       bool savedToApi = await _apiService.saveRoute(commandsString);
       if (mounted) {
         _showFeedbackSnackBar(
@@ -245,7 +233,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
           isError: !savedToApi,
         );
       }
-      // Decide se continua mesmo sem salvar API (aqui estamos continuando)
       await Future.delayed(const Duration(milliseconds: 300));
 
       // Envia para o carrinho via BLE
