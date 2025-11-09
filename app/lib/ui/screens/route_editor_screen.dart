@@ -6,12 +6,12 @@ import '../../models/trajectory_command.dart';
 import 'previous_routes_screen.dart';
 import '../../services/ble_manager.dart';
 import '../../services/api_service.dart';
+import '../../service_locator.dart';
 
-// Recebe a instância do BleManager via construtor
+// Removemos o parâmetro do construtor
 class RouteEditorScreen extends StatefulWidget {
-  final BleManager bleManager;
-
-  const RouteEditorScreen({super.key, required this.bleManager});
+  
+  const RouteEditorScreen({super.key}); 
 
   @override
   State<RouteEditorScreen> createState() => _RouteEditorScreenState();
@@ -23,15 +23,14 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   final List<TrajectoryCommand> _commands = [];
   bool _isSending = false; // Controla estado de envio/loading
 
-  // Obtém a instância do BleManager passada pelo widget
-  late final BleManager _bleManager;
-  // Instância do ApiService (SUBSTITUIR PELA FORMA CORRETA DE OBTER INSTÂNCIA)
-  final ApiService _apiService = ApiService(); // MODO INCORRETO (DEMO)
+  //Pega as instâncias do locator
+  late final BleManager _bleManager = locator<BleManager>();
+  final ApiService _apiService = locator<ApiService>();
 
   @override
   void initState() {
     super.initState();
-    _bleManager = widget.bleManager;
+    
     _setupConnectionLostListener(); // Chama a função corrigida
   }
 
@@ -41,6 +40,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   void _handleConnectionLost() {
+ 
     final state = _bleManager.connectionState.value;
     print("[RouteEditor] Listener: Estado mudou para $state");
     if (state == BluetoothConnectionState.disconnected && mounted) {
@@ -53,6 +53,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
 
   @override
   void dispose() {
+ 
     _bleManager.connectionState.removeListener(_handleConnectionLost);
     _distanceController.dispose();
     _angleController.dispose();
@@ -60,6 +61,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   void _addCommand(CommandType type) {
+  
     if (_isSending) return;
     int? value;
     TextEditingController? controllerToClear;
@@ -96,6 +98,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   void _removeCommand(int index) {
+  
     if (_isSending) return;
     setState(() {
       _commands.removeAt(index);
@@ -103,6 +106,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   Future<void> _startRoute() async {
+  
     if (_isSending) return; // Evita envio duplo
     if (_commands.isEmpty) {
       _showFeedbackSnackBar(
@@ -118,7 +122,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
       barrierDismissible: true, // Permite fechar clicando fora
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF191C23), 
+          backgroundColor: const Color(0xFF191C23),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
             side: BorderSide(color: const Color(0xFF33DDFF), width: 1),
@@ -148,11 +152,11 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
               children: [
                 //botão 'Sim'
                 SizedBox(
-                  width: 120, 
+                  width: 120,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF33DDFF), 
-                      foregroundColor: const Color(0xFF0D0F14), 
+                      backgroundColor: const Color(0xFF33DDFF),
+                      foregroundColor: const Color(0xFF0D0F14),
                       padding: const EdgeInsets.symmetric(
                         vertical: 14,
                       ),
@@ -175,7 +179,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                 const SizedBox(width: 15),
                 //botão "Não"
                 SizedBox(
-                  width: 120, 
+                  width: 120,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
@@ -185,7 +189,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         vertical: 14,
-                      ), 
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -210,16 +214,15 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
     );
     if (wantsToStart != true) {
       print("[RouteEditor] Início do percurso cancelado pelo usuário.");
-      return; 
+      return;
     }
 
     try {
       setState(() {
         _isSending = true;
-      }); 
-      final String commandsString = _commands
-          .map((cmd) => cmd.toString())
-          .join(', ');
+      });
+      final String commandsString =
+          _commands.map((cmd) => cmd.toString()).join(', ');
       print(
         "[RouteEditor] Iniciando percurso (confirmado) com string: $commandsString",
       );
@@ -247,7 +250,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
               isError: false,
               color: Colors.blueAccent,
             );
-          // TODO: Após enviar, ir para tela de executando percurso
+          //Após enviar, ir para tela de executando percurso
         } else {
           print("[RouteEditor] Falha ao enviar comandos.");
           if (mounted)
@@ -262,7 +265,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
       if (mounted)
         _showFeedbackSnackBar("Ocorreu um erro inesperado.", isError: true);
     } finally {
-      // 5. Garante que o estado de envio seja resetado
+      // Garante que o estado de envio seja resetado
       if (mounted)
         setState(() {
           _isSending = false;
@@ -271,6 +274,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   void _viewPreviousRoutes() {
+  
     if (_isSending) return;
     print("[RouteEditor] Navegando para Rotas Anteriores...");
     Navigator.push(
@@ -281,6 +285,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
 
   // Mostra uma mensagem na parte inferior (SnackBar)
   void _showFeedbackSnackBar(
+  
     String message, {
     bool isError = false,
     Color? color,
@@ -292,9 +297,9 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
         content: Text(message),
         backgroundColor:
             color ??
-            (isError
-                ? Colors.redAccent
-                : Colors.green), // Usa cor passada ou padrão
+                (isError
+                    ? Colors.redAccent
+                    : Colors.green), // Usa cor passada ou padrão
         duration: Duration(seconds: isError ? 3 : 2), // Mais tempo para erros
       ),
     );
@@ -303,6 +308,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   // build UI
   @override
   Widget build(BuildContext context) {
+
     final textTheme = Theme.of(context).textTheme;
     // Pega os estilos dos botões do tema para consistência
     final buttonStylePrimary = Theme.of(context).elevatedButtonTheme.style

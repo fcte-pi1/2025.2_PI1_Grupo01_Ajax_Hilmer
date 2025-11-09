@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:app/services/ble_manager.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'route_editor_screen.dart';
+import '../../service_locator.dart'; 
 
 class ConnectionScreen extends StatefulWidget {
   const ConnectionScreen({super.key});
@@ -11,11 +12,12 @@ class ConnectionScreen extends StatefulWidget {
 }
 
 class _ConnectionScreenState extends State<ConnectionScreen> {
-  // Usa o nome BleManager diretamente
-  late final BleManager _bleManager;
+  // Pede a instância Singleton ao locator
+  late final BleManager _bleManager = locator<BleManager>();
 
   // Lista Mock COMENTAR/REMOVER para uso real
   final List<ScanResult> _mockScanResults = [
+    
     ScanResult(
       device: BluetoothDevice(
         remoteId: const DeviceIdentifier('00:11:22:33:AA:BB'),
@@ -69,7 +71,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
   @override
   void initState() {
     super.initState();
-    _bleManager = BleManager(); // Cria a instância do serviço
+
     // Inicializa com dados mockados (COMENTE a linha abaixo para usar scan real)
     _bleManager.scanResults.value = _mockScanResults;
     _setupConnectionListener(); // Configura o listener para navegação
@@ -88,14 +90,14 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     if (!mounted) return; // Garante que a tela ainda existe
 
     if (state == BluetoothConnectionState.connected) {
-      // Verifica se a característica foi encontrada (essencial!)
+      // Verifica se a característica foi encontrada 
       if (_bleManager.isReadyToSend) {
         // Adicionar getter `isReadyToSend` no BleManager
         print("[ConnectionScreen] Conectado e pronto! Navegando...");
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) =>
-                RouteEditorScreen(bleManager: _bleManager), // Passa a instância
+           
+            builder: (context) => RouteEditorScreen(),
           ),
         );
         // Remove o listener APÓS navegar com sucesso
@@ -123,12 +125,18 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     _bleManager.connectionState.removeListener(
       _handleConnectionChange,
     ); // Remove listener
-    _bleManager.dispose(); // Limpa o serviço
+    
+    // 5. REMOVA/COMENTE A LINHA ABAIXO:
+    // Não damos "dispose" em um Singleton, pois ele deve viver
+    // durante todo o ciclo de vida do app.
+    // _bleManager.dispose(); 
+    
     super.dispose();
   }
 
   // Inicia o scan
   void _startScanning() {
+   
     _bleManager.scanResults.value =
         []; // Limpa a lista antes de escanear de verdade
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -155,34 +163,13 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => RouteEditorScreen(bleManager: _bleManager),
+        builder: (context) => RouteEditorScreen(),
       ),
     );
     /*
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Conectando a $deviceName...')));
-    _bleManager.connectToDevice(device).then((success) {
-      // Se connectToDevice retorna false (falha antes do listener)
-      if (!success &&
-          mounted &&
-          _bleManager.connectionState.value !=
-              BluetoothConnectionState.connected) {
-        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Falha ao conectar a $deviceName'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
-       
-
-      // Se a conexão for bem sucedida E a característica for encontrada,
-      // o listener _handleConnectionChange cuidará da navegação.
-    });
-  */
+    ... (resto do código comentado permanece igual)
+    */
   }
 
   // Desconecta
@@ -192,6 +179,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+ 
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(

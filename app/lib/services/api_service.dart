@@ -1,26 +1,23 @@
 import 'dart:convert';
-import 'dart:io';
+// import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart' show kReleaseMode;
+// import 'package:flutter/foundation.dart' show kReleaseMode; 
 
 class ApiService {
   late final String _baseUrl;
   final Duration _timeout = const Duration(seconds: 15);
 
-  ApiService() {
-    // if (kReleaseMode) {
-    //   _baseUrl = "https://two025-2-pi1-grupo01-ajax-hilmer.onrender.com";
-    // }
-    _baseUrl = "https://two025-2-pi1-grupo01-ajax-hilmer.onrender.com";
-    print(
-      "[ApiService] Modo: ${kReleaseMode ? 'Produção' : 'Desenvolvimento'}",
-    );
+  // recebe a baseUrl pelo construtor
+  ApiService({required String baseUrl}) {
+    _baseUrl = baseUrl;
+    // Removida a lógica do kReleaseMode e a URL hardcoded
     print("[ApiService] Usando baseURL: $_baseUrl");
   }
 
   //POST /routes/
   Future<bool> saveRoute(String commandsString) async {
+
     final url = Uri.parse('$_baseUrl/routes/');
     print("[ApiService] POST $url \n Body: {'commands': '$commandsString'}");
     try {
@@ -60,7 +57,7 @@ class ApiService {
           .timeout(_timeout);
 
       if (response.statusCode == 200) {
-        // 200: OK
+       
         Map<String, dynamic> responseData = jsonDecode(
           utf8.decode(response.bodyBytes),
         );

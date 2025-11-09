@@ -2,13 +2,20 @@
 
 import 'package:flutter/material.dart';
 import 'ui/screens/connection_screen.dart';
+import 'service_locator.dart'; 
 
-void main() {
+Future<void> main() async { 
+  // Garantir que o Flutter esteja inicializado
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Chamar setup ANTES do runApp()
+  await setupLocator(); 
+  
   runApp(const MyApp()); //Inicia o widget principal MyApp
 }
 
-//Herda de `StatelessWidget`, O QUE Significa que este widget em si não tem estado interno que muda
-//unica funcao dele é configurar coisas que raramente mudam, como o tema e a tela inicial.
+//Herda de `StatelessWidget`...
+
 class MyApp extends StatelessWidget {
   //construtor pafrão
   const MyApp({super.key});

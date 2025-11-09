@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
+import '../../service_locator.dart'; 
 
 class PreviousRoutesScreen extends StatefulWidget {
   const PreviousRoutesScreen({super.key});
@@ -9,8 +10,8 @@ class PreviousRoutesScreen extends StatefulWidget {
 }
 
 class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
-  final ApiService _apiService =
-      ApiService(); // MODO INCORRETO (DEMO)
+  
+  final ApiService _apiService = locator<ApiService>();
 
   final ScrollController _scrollController =
       ScrollController(); // Controlador do scroll
@@ -42,6 +43,7 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   // Listener do Scroll: chamado toda vez que o usuário rola
   void _onScroll() {
+
     // Verifica se estamos perto do fim da lista (ex: 90% rolado)
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.9) {
@@ -52,6 +54,7 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   // Busca a primeira página de rotas
   Future<void> _fetchInitialRoutes() async {
+
     // Evita múltiplas chamadas
     if (_isLoading) return;
 
@@ -88,6 +91,7 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   // Busca as próximas páginas de rotas
   Future<void> _fetchMoreRoutes() async {
+  
     // Condições de guarda: não busca se já estiver buscando, ou se não houver mais dados
     if (_isLoading || _isLoadingMore || !_hasMore) return;
 
@@ -126,6 +130,7 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
   }
 
   Future<void> _refreshRoutes() async {
+  
     print("[PreviousRoutes] Atualizando rotas...");
     // Reseta o estado e busca a primeira página novamente
     _offset = 0;
@@ -136,6 +141,7 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   // Formata a data (igual antes)
   String _formatDateTime(String? dateTimeString) {
+  
     if (dateTimeString == null || dateTimeString.isEmpty)
       return 'Data indisponível';
     try {
@@ -148,6 +154,7 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   @override
   Widget build(BuildContext context) {
+ 
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -158,6 +165,7 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   // Widget auxiliar para construir o corpo da tela
   Widget _buildBody(TextTheme textTheme) {
+  
     // Estado 1: Carregamento Inicial
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -189,7 +197,7 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
                     vertical: 12,
                   ),
                 ),
-                onPressed: _refreshRoutes, 
+                onPressed: _refreshRoutes,
                 icon: const Icon(Icons.refresh, size: 20),
                 label: const Text('Tentar Novamente'),
               ),
@@ -235,7 +243,7 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
     // Estado 4: Sucesso com dados, exibe a lista
     return RefreshIndicator(
-      onRefresh: _refreshRoutes, 
+      onRefresh: _refreshRoutes,
       child: ListView.builder(
         controller: _scrollController, // Conecta o controlador de scroll
         padding: const EdgeInsets.all(15),
