@@ -5,6 +5,10 @@ _IRQ_CENTRAL_CONNECT = 1
 _IRQ_CENTRAL_DISCONNECT = 2
 _IRQ_GATTS_WRITE = 3
 
+_IRQ_CENTRAL_CONNECT = 1
+_IRQ_CENTRAL_DISCONNECT = 2
+_IRQ_GATTS_WRITE = 3
+
 class BLEManager:
     def __init__(self, ble, name, service_uuid, cmd_uuid, data_uuid):
         self._ble = ble
@@ -35,16 +39,23 @@ class BLEManager:
 
     def _irq(self, event, data):
         if event == _IRQ_CENTRAL_CONNECT: 
+        if event == _IRQ_CENTRAL_CONNECT: 
             conn_handle, _, _ = data
             self._connections.add(conn_handle)
             print("BLE Conectado")
             self._ble.gap_advertise(None) 
 
         elif event == _IRQ_CENTRAL_DISCONNECT:
+            self._ble.gap_advertise(None) 
+
+        elif event == _IRQ_CENTRAL_DISCONNECT:
             conn_handle, _, _ = data
+            self._connections.discard(conn_handle)
             self._connections.discard(conn_handle)
             print("BLE Desconectado")
             self._advertise()
+            
+        elif event == _IRQ_GATTS_WRITE:
             
         elif event == _IRQ_GATTS_WRITE:
             conn_handle, value_handle = data
@@ -59,6 +70,7 @@ class BLEManager:
 
     def send_data(self, data_dict):
         data_str = ",".join([f"{k}:{v}" for k, v in data_dict.items()])
+        data_bytes = data_str.encode('utf-8')
         data_bytes = data_str.encode('utf-8')
         
         try:
