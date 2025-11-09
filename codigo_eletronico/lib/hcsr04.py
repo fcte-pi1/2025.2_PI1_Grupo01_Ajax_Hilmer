@@ -1,3 +1,7 @@
+# --- lib/hcsr04.py ---
+# Biblioteca para o sensor ultrassônico HC-SR04
+# Baseado na implementação de: https://github.com/micropython-IMU/micropython-hcsr04
+
 from machine import Pin, time_pulse_us
 import time
 
@@ -35,33 +39,22 @@ class HCSR04:
         try:
             # Mede o tempo (em microsegundos) que o pino Echo
             # fica em nível ALTO.
-            # '1' = esperar nível alto
             pulse_time = time_pulse_us(self.echo, 1, self.echo_timeout_us)
+
+            # --- INÍCIO DA CORREÇÃO ---
+            # Checagem crítica: 
+            # Se o tempo for negativo, é um timeout
+            if pulse_time < 0:
+                # print("Erro: time_pulse_us retornou negativo")
+                return -1
+            # --- FIM DA CORREÇÃO ---
+
         except OSError as e:
             # Timeout ou outro erro (OSError: [Errno 110] ETIMEDOUT)
-            # print("Timeout ao esperar o eco:", e)
+            # print("Erro: OSErrorm", e)
             return -1
 
-        # A velocidade do som é ~343 m/s ou 34300 cm/s
-        # O som viaja 1 cm em ~29.15 microsegundos (1_000_000 / 34300)
-        
-        # Distância = (Tempo do Pulso * Velocidade do Som) / 2
-        # (Divide por 2 porque é uma viagem de ida e volta)
-        
-        # Dist (cm) = (pulse_time_us / 1_000_000) * 34300 / 2
-        # Dist (cm) = pulse_time_us * 0.0343 / 2
-        # Dist (cm) = pulse_time_us / 58.3 (aproximadamente)
-        
-        # Usando a fórmula mais comum:
+        # Se chegamos aqui, pulse_time é positivo
         dist_cm = pulse_time / 58.0
         
         return dist_cm
-
-class LineFollower:
-    def __init__(self, pin_left, pin_right):
-        self.left = Pin(pin_left, Pin.IN)
-        self.right = Pin(pin_right, Pin.IN)
-
-    def read(self):
-        # Assumindo 0 = linha preta, 1 = superfície branca
-        return self.left.value(), self.right.value()
