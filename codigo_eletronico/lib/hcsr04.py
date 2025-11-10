@@ -1,6 +1,7 @@
 # --- lib/hcsr04.py ---
 # Biblioteca para o sensor ultrassônico HC-SR04
-# Baseado na implementação de: https://github.com/micropython-IMU/micropython-hcsr04
+# Adaptada para ESP32 (com divisor de tensão no pino ECHO)
+# Baseado em: https://github.com/micropython-IMU/micropython-hcsr04
 
 from machine import Pin, time_pulse_us
 import time
@@ -8,53 +9,47 @@ import time
 class HCSR04:
     def __init__(self, trigger_pin, echo_pin, echo_timeout_us=30000):
         """
-        trigger_pin: Pino de saída para enviar o pulso.
-        echo_pin: Pino de entrada para ler o eco.
-        echo_timeout_us: Timeout em microsegundos. 30000us = 30ms.
+        trigger_pin: Pino de saída para enviar o pulso (GPIO)
+        echo_pin: Pino de entrada para ler o eco (⚠️ precisa de divisor de tensão no ESP32!)
+        echo_timeout_us: Tempo máximo de espera (30.000 µs = 30 ms)
         """
         self.echo_timeout_us = echo_timeout_us
-        
+
         # Inicializa os pinos
         self.trigger = Pin(trigger_pin, Pin.OUT)
         self.echo = Pin(echo_pin, Pin.IN)
-        
+
         # Garante que o trigger comece em nível baixo
         self.trigger.off()
 
     def _send_pulse(self):
-        """
-        Envia um pulso de 10 microsegundos no pino Trigger.
-        """
+        """Envia um pulso de 10 µs no TRIG."""
+        self.trigger.off()
+        time.sleep_us(2)    # estabiliza
         self.trigger.on()
-        time.sleep_us(10)
+        time.sleep_us(10)   # pulso de 10 µs
         self.trigger.off()
 
     def distance_cm(self):
         """
         Mede a distância em centímetros.
-        Retorna -1 em caso de timeout (sem eco).
+        Retorna:
+          - Valor em cm (float) se sucesso
+          - -1 em caso de timeout ou erro
         """
-        self._send_pulse() # Envia o pulso
-        
+        self._send_pulse()
+
         try:
-            # Mede o tempo (em microsegundos) que o pino Echo
-            # fica em nível ALTO.
+            # Mede o tempo que o ECHO ficou em nível ALTO (em microsegundos)
             pulse_time = time_pulse_us(self.echo, 1, self.echo_timeout_us)
 
-            # --- INÍCIO DA CORREÇÃO ---
-            # Checagem crítica: 
-            # Se o tempo for negativo, é um timeout
             if pulse_time < 0:
-                # print("Erro: time_pulse_us retornou negativo")
-                return -1
-            # --- FIM DA CORREÇÃO ---
+                return -1  # Timeout
 
-        except OSError as e:
-            # Timeout ou outro erro (OSError: [Errno 110] ETIMEDOUT)
-            # print("Erro: OSErrorm", e)
-            return -1
+        except OSError:
+            return -1  # Falha de leitura ou timeout
 
-        # Se chegamos aqui, pulse_time é positivo
-        dist_cm = pulse_time / 58.0
-        
-        return dist_cm
+        # Converte tempo em distância (velocidade do som ≈ 343 m/s)
+        distance = (pulse_time / 2) / 29.1  # em cm
+        return distance
+

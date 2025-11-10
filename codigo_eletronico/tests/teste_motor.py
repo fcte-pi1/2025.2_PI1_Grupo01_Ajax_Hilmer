@@ -6,7 +6,7 @@ from lib.motor_control import MotorControl # Importa sua classe
 import config # Importa suas configurações
 
 # Tempo de pausa entre os movimentos (em segundos)
-TEMPO_PAUSA = 5
+TEMPO_PAUSA = 0.5
 
 print("Iniciando o teste dos motores...")
 
@@ -24,15 +24,21 @@ try:
     print(f"Movendo para FRENTE por {TEMPO_PAUSA}s...")
     motores.frente()
     sleep(TEMPO_PAUSA)
-
+    motores.parar()
+    
+    sleep(2)
+    
     print(f"Movendo para TRÁS por {TEMPO_PAUSA}s...")
     motores.tras()
     sleep(TEMPO_PAUSA)
+    motores.parar()
 
     print(f"Virando à ESQUERDA por {TEMPO_PAUSA}s...")
     motores.esquerda()
     sleep(TEMPO_PAUSA)
-
+    motores.parar()
+    
+    sleep(2)
     print(f"Virando à DIREITA por {TEMPO_PAUSA}s...")
     motores.direita()
     sleep(TEMPO_PAUSA)
@@ -55,4 +61,5 @@ finally:
         motores.parar()
     else:
         # Se falhou antes de criar o objeto, apenas informa
-        print("Objeto 'motores' não foi inicializado.")
+        print("Objeto 'motores' não foi inicializado.") 
+
