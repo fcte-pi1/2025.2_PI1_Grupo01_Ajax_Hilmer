@@ -6,8 +6,9 @@ from lib.motor_control import MotorControl # Importa sua classe
 import config # Importa suas configurações
 
 # Tempo de pausa entre os movimentos (em segundos)
-TEMPO_PAUSA = 0.5
-
+TEMPO_PAUSA = 1.5
+TEMPO_GIRO = 0.87 # TEMPO DE ROTAÇÃO ESTIMADO EM 90 GRAUS
+TEMPO_ADICIONAL = 0.193 # TEMPO DE GIRO ADICIONAL (o carrinho quando vira para a direita, faz uma curva a mais, esse tempo ajuda ele a se permanecer reto)
 print("Iniciando o teste dos motores...")
 
 try:
@@ -21,27 +22,48 @@ try:
     )
 
     # 2. Executa a sequência de testes
+    
+    print(f"Virando à ESQUERDA por {TEMPO_GIRO}s...")
+    motores.esquerda()
+    sleep(TEMPO_GIRO)
+    motores.parar()
+    sleep(2)
+
     print(f"Movendo para FRENTE por {TEMPO_PAUSA}s...")
     motores.frente()
     sleep(TEMPO_PAUSA)
     motores.parar()
-    
     sleep(2)
     
-    print(f"Movendo para TRÁS por {TEMPO_PAUSA}s...")
-    motores.tras()
-    sleep(TEMPO_PAUSA)
-    motores.parar()
-
-    print(f"Virando à ESQUERDA por {TEMPO_PAUSA}s...")
+    print(f"Virando à ESQUERDA por {TEMPO_GIRO}s...")
     motores.esquerda()
+    sleep(TEMPO_GIRO)
+    motores.parar()
+    sleep(2)
+
+    print(f"Movendo para FRENTE por {TEMPO_PAUSA}s...")
+    motores.frente()
     sleep(TEMPO_PAUSA)
     motores.parar()
-    
     sleep(2)
-    print(f"Virando à DIREITA por {TEMPO_PAUSA}s...")
+    
+    print(f"Virando à DIREITA por {TEMPO_GIRO + TEMPO_ADICIONAL}s...")
     motores.direita()
+    sleep(TEMPO_GIRO + TEMPO_ADICIONAL)
+    motores.parar()
+    sleep(2)
+    
+    print(f"Virando à ESQUERDA por {TEMPO_ADICIONAL}s...")
+    motores.esquerda()
+    sleep(TEMPO_ADICIONAL)
+    motores.parar()
+    sleep(2)
+    
+    print(f"Movendo para FRENTE por {TEMPO_PAUSA}s...")
+    motores.frente()
     sleep(TEMPO_PAUSA)
+    motores.parar()
+    sleep(2)
 
     print("Teste concluído com sucesso!")
 
