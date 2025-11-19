@@ -1,0 +1,1298 @@
+<!DOCTYPE html><html lang="pt" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentação do produto desenvolvido na disciplina Projeto Integrador de Engenharia I">
+      
+      
+        <meta name="author" content="Grupo 01">
+      
+      
+      
+        <link rel="prev" href="../../hardware/hardware/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Software - Projeto Integrador de Engenharia I</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#descricao-de-software" class="md-skip">
+          Ir para o conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Projeto Integrador de Engenharia I" class="md-header__button md-logo" aria-label="Projeto Integrador de Engenharia I" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Projeto Integrador de Engenharia I
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Software
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando a pesquisa
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fcte-pi1/2025.2_PI1_Grupo01_Ajax" title="Ir ao repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Início
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../energia/energia/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Energia
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../estrutura/estrutura/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Estrutura
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../hardware/hardware/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Hardware
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Software
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Projeto Integrador de Engenharia I" class="md-nav__button md-logo" aria-label="Projeto Integrador de Engenharia I" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    Projeto Integrador de Engenharia I
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fcte-pi1/2025.2_PI1_Grupo01_Ajax" title="Ir ao repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../energia/energia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Energia
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../estrutura/estrutura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estrutura
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#atores-e-cenario-de-uso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Atores e Cenário de Uso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backlog-do-produto-historias-de-usuario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backlog do Produto (Histórias de Usuário)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backlog do Produto (Histórias de Usuário)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#criterios-de-aceite-das-historias-de-usuario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critérios de Aceite das Histórias de Usuário
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-01-programacao-de-trajetoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-01: Programação de Trajetória
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-02-execucao-de-trajetoria-programada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-02: Execução de Trajetória Programada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-03-deposito-automatico-da-carga" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-03: Depósito Automático da Carga
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-04-registro-de-dados-da-missao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-04: Registro de Dados da Missão
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-05-persistencia-de-dados-da-missao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-05: Persistência de Dados da Missão
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-06-visualizacao-de-dados-para-analise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-06: Visualização de Dados para Análise
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-07-aprimoramento-da-usabilidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-07: Aprimoramento da Usabilidade
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisitos-nao-funcionais" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisitos Não-Funcionais
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requisitos Não-Funcionais">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#must-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Must Have:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#should-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Should Have:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#could-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Could Have:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagrama-bpmn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagrama BPMN
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagrama-de-casos-de-uso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagrama de Casos de Uso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagrama-entidade-relacionamento-der" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagrama Entidade-Relacionamento (DER)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagrama-de-estados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagrama de Estados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analise-de-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Análise de Dados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prototipo-funcional-do-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protótipo Funcional do Software
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#atores-e-cenario-de-uso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Atores e Cenário de Uso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backlog-do-produto-historias-de-usuario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backlog do Produto (Histórias de Usuário)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backlog do Produto (Histórias de Usuário)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#criterios-de-aceite-das-historias-de-usuario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critérios de Aceite das Histórias de Usuário
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-01-programacao-de-trajetoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-01: Programação de Trajetória
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-02-execucao-de-trajetoria-programada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-02: Execução de Trajetória Programada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-03-deposito-automatico-da-carga" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-03: Depósito Automático da Carga
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-04-registro-de-dados-da-missao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-04: Registro de Dados da Missão
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-05-persistencia-de-dados-da-missao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-05: Persistência de Dados da Missão
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-06-visualizacao-de-dados-para-analise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-06: Visualização de Dados para Análise
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hu-07-aprimoramento-da-usabilidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HU-07: Aprimoramento da Usabilidade
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisitos-nao-funcionais" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisitos Não-Funcionais
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requisitos Não-Funcionais">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#must-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Must Have:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#should-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Should Have:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#could-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Could Have:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagrama-bpmn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagrama BPMN
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagrama-de-casos-de-uso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagrama de Casos de Uso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagrama-entidade-relacionamento-der" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagrama Entidade-Relacionamento (DER)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagrama-de-estados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagrama de Estados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analise-de-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Análise de Dados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prototipo-funcional-do-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protótipo Funcional do Software
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="descricao-de-software">Descrição de Software</h1>
+<p>Esta seção detalha a concepção do software para o projeto do carrinho autônomo. A abordagem utilizada foi a Engenharia de Requisitos, definindo os atores do sistema, o cenário de uso, o backlog do produto em formato de Histórias de Usuário com critérios de aceite claros, e os requisitos não-funcionais que guiarão o desenvolvimento e a qualidade do sistema.</p>
+<h2 id="atores-e-cenario-de-uso">Atores e Cenário de Uso</h2>
+<p>Para o escopo deste software, identificamos dois atores principais:</p>
+<ul>
+<li><strong>Professor/Operador:</strong> O usuário humano responsável por interagir com a interface gráfica para programar a trajetória, iniciar a operação do carrinho e analisar os dados de desempenho coletados ao final de uma missão.</li>
+<li><strong>Banco de Dados (Ator Secundário):</strong> É um ator não-humano que representa o sistema de armazenamento externo. Ele interage com o nosso sistema para persistir os dados gerados durante o percurso e para fornecê-los quando solicitado para análise.</li>
+</ul>
+<p>O diagrama de caso de uso abaixo ilustra as interações principais entre os atores e o sistema.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../diagramas/dcu.png" data-desc-position="bottom"><img alt="Diagrama de Casos de Uso" src="../diagramas/dcu.png"></a></p>
+<p><strong>Cenário de Uso Principal:</strong></p>
+<p>Professor/Operador posiciona manualmente o objeto frágil (similar a um ovo) no compartimento de carga do carrinho. Em seguida, utilizando a interface gráfica do sistema, ele cria uma sequência de comandos que define a trajetória completa.</p>
+<p>Após o envio das instruções via comunicação sem fio, o sistema (através do software embarcado no carrinho) executa a rota de forma autônoma. Ao chegar ao destino, o objeto é depositado automaticamente em uma caixa acolchoada.</p>
+<p>Durante o percurso, o sistema registra os dados de trajetória e tempo. Ao final da missão, esses dados são transmitidos e armazenados no Banco de Dados, ficando disponíveis para posterior análise pelo Professor/Operador.</p>
+<h2 id="backlog-do-produto-historias-de-usuario">Backlog do Produto (Histórias de Usuário)</h2>
+<p>O backlog do produto foi construído utilizando o formato de Histórias de Usuário para manter o foco no valor entregue ao usuário final. A priorização foi definida pelo método MoSCoW (Must Have, Should Have, Could Have).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Título da História</th>
+<th style="text-align: left;">Prioridade (MoSCoW)</th>
+<th style="text-align: left;">História de Usuário (Descrição)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>-</strong></td>
+<td style="text-align: left;"><strong>Épico 1: Gerenciamento e Execução de Trajetória</strong></td>
+<td style="text-align: left;"><strong>-</strong></td>
+<td style="text-align: left;"><strong>-</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">HU-01</td>
+<td style="text-align: left;">Programação de Trajetória</td>
+<td style="text-align: left;">Must Have</td>
+<td style="text-align: left;">Como um professor/operador, eu quero criar uma trajetória em uma interface gráfica, definindo uma sequência de comandos, para que eu possa programar o percurso que o carrinho deve seguir.</td>
+</tr>
+<tr>
+<td style="text-align: left;">HU-02</td>
+<td style="text-align: left;">Execução de Trajetória Programada</td>
+<td style="text-align: left;">Must Have</td>
+<td style="text-align: left;">Como um professor/operador, eu quero que o carrinho execute fielmente a sequência de comandos enviada, para que ele complete qualquer um dos três tipos de percurso definidos no desafio de forma autônoma.</td>
+</tr>
+<tr>
+<td style="text-align: left;">HU-03</td>
+<td style="text-align: left;">Depósito Automático da Carga</td>
+<td style="text-align: left;">Must Have</td>
+<td style="text-align: left;">Como um professor/operador, eu quero que o carrinho deposite a carga automaticamente na caixa acolchoada ao final da trajetória, para que o objetivo da entrega seja cumprido sem intervenção humana.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>-</strong></td>
+<td style="text-align: left;"><strong>Épico 2: Coleta, Análise e Usabilidade</strong></td>
+<td style="text-align: left;"><strong>-</strong></td>
+<td style="text-align: left;"><strong>-</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">HU-04</td>
+<td style="text-align: left;">Registro de Dados da Missão</td>
+<td style="text-align: left;">Must Have</td>
+<td style="text-align: left;">Como um professor/operador, eu quero que o sistema registre a trajetória percorrida e o tempo gasto durante a execução, para que eu possa coletar dados para análise de desempenho.</td>
+</tr>
+<tr>
+<td style="text-align: left;">HU-05</td>
+<td style="text-align: left;">Persistência de Dados da Missão</td>
+<td style="text-align: left;">Must Have</td>
+<td style="text-align: left;">Como um professor/operador, eu quero que os dados de trajetória e tempo sejam salvos em um banco de dados, para que os resultados de diferentes execuções possam ser armazenados permanentemente.</td>
+</tr>
+<tr>
+<td style="text-align: left;">HU-06</td>
+<td style="text-align: left;">Visualização de Dados para Análise</td>
+<td style="text-align: left;">Should Have</td>
+<td style="text-align: left;">Como um professor/operador, eu quero uma tela no software para visualizar os dados de desempenho das missões, para que eu possa fazer a análise dos resultados.</td>
+</tr>
+<tr>
+<td style="text-align: left;">HU-07</td>
+<td style="text-align: left;">Aprimoramento da Usabilidade</td>
+<td style="text-align: left;">Could Have</td>
+<td style="text-align: left;">Como um professor/operador, eu quero que a interface gráfica seja aprimorada com mais recursos visuais e fluxos simplificados, para que a programação da trajetória seja mais fácil e intuitiva.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="criterios-de-aceite-das-historias-de-usuario">Critérios de Aceite das Histórias de Usuário</h3>
+<p>Abaixo estão detalhados os critérios de aceite para cada História de Usuário, definindo as condições que devem ser satisfeitas para que a funcionalidade seja considerada completa.</p>
+<h3 id="hu-01-programacao-de-trajetoria">HU-01: Programação de Trajetória</h3>
+<ul>
+<li><strong>Dado que</strong> a interface gráfica está aberta, <strong>quando</strong> eu acesso a área de programação, <strong>então</strong> devo ver botões para adicionar comandos de "Andar (cm)" e "Girar (graus)".</li>
+<li><strong>Dado que</strong> adicionei comandos, <strong>quando</strong> eu os organizo na tela, <strong>então</strong> devo poder ver a sequência completa da trajetória.</li>
+<li><strong>Dado que</strong> a trajetória está pronta, <strong>quando</strong> eu clico no botão "Enviar ao Carrinho", <strong>então</strong> os dados devem ser transmitidos via tecnologia sem fio.</li>
+<li><strong>Dado que</strong> os dados foram enviados, <strong>quando</strong> a transmissão é bem-sucedida, <strong>então</strong> devo receber uma mensagem de confirmação na tela (ex: "Trajetória enviada com sucesso!").</li>
+</ul>
+<h3 id="hu-02-execucao-de-trajetoria-programada">HU-02: Execução de Trajetória Programada</h3>
+<ul>
+<li><strong>Dado que</strong> o carrinho recebeu uma sequência de comandos, <strong>quando</strong> o comando de início é acionado, <strong>então</strong> ele deve executar o primeiro comando da lista.</li>
+<li><strong>Dado que</strong> um comando foi concluído, <strong>quando</strong> existem mais comandos na lista, <strong>então</strong> o carrinho deve executar o próximo comando sequencialmente.</li>
+<li><strong>Dado que</strong> o último comando foi executado, <strong>quando</strong> a lista de comandos termina, <strong>então</strong> o carrinho deve parar completamente.</li>
+</ul>
+<h3 id="hu-03-deposito-automatico-da-carga">HU-03: Depósito Automático da Carga</h3>
+<ul>
+<li><strong>Dado que</strong> o carrinho parou após o último comando da trajetória, <strong>quando</strong> ele identifica o fim da missão, <strong>então</strong> o sistema de software deve acionar o comando para o hardware de depósito.</li>
+<li><strong>Dado que</strong> o mecanismo de depósito foi acionado, <strong>quando</strong> o ciclo de entrega termina, <strong>então</strong> o software deve garantir que o mecanismo retorne à sua posição inicial de repouso.</li>
+</ul>
+<h3 id="hu-04-registro-de-dados-da-missao">HU-04: Registro de Dados da Missão</h3>
+<ul>
+<li><strong>Dado que</strong> a execução da trajetória foi iniciada, <strong>quando</strong> o carrinho está em movimento, <strong>então</strong> o software embarcado deve registrar periodicamente sua posição estimada (telemetria).</li>
+<li><strong>Dado que</strong> a execução foi iniciada, <strong>quando</strong> a missão termina, <strong>então</strong> o software deve ter calculado e armazenado o tempo total decorrido.</li>
+</ul>
+<h3 id="hu-05-persistencia-de-dados-da-missao">HU-05: Persistência de Dados da Missão</h3>
+<ul>
+<li><strong>Dado que</strong> uma missão foi concluída, <strong>quando</strong> o carrinho está em estado de repouso, <strong>então</strong> ele deve transmitir o pacote de dados (trajetória e tempo) para o sistema central.</li>
+<li><strong>Dado que</strong> o sistema central recebeu os dados, <strong>quando</strong> os dados são válidos, <strong>então</strong> eles devem ser inseridos em uma nova entrada no banco de dados, associada a um identificador único de missão.</li>
+</ul>
+<h3 id="hu-06-visualizacao-de-dados-para-analise">HU-06: Visualização de Dados para Análise</h3>
+<ul>
+<li><strong>Dado que</strong> estou na interface gráfica, <strong>quando</strong> eu acesso a seção "Resultados", <strong>então</strong> devo ver uma lista de missões executadas (p.ex., por data e hora).</li>
+<li><strong>Dado que</strong> selecionei uma missão da lista, <strong>quando</strong> os dados são carregados, <strong>então</strong> devo ver na tela uma representação visual da trajetória percorrida e o tempo total gasto.</li>
+</ul>
+<h3 id="hu-07-aprimoramento-da-usabilidade">HU-07: Aprimoramento da Usabilidade</h3>
+<ul>
+<li><strong>Dado que</strong> estou programando a trajetória, <strong>quando</strong> eu olho para a interface, <strong>então</strong> os botões e comandos são representados por ícones intuitivos.</li>
+<li><strong>Dado que</strong> ocorreu um erro (ex: falha de comunicação), <strong>quando</strong> o sistema me notifica, <strong>então</strong> a mensagem de erro deve ser clara e amigável.</li>
+</ul>
+<h2 id="requisitos-nao-funcionais">Requisitos Não-Funcionais</h2>
+<p>Os requisitos não-funcionais definem os atributos de qualidade e as restrições operacionais do sistema.</p>
+<h3 id="must-have">Must Have:</h3>
+<ul>
+<li><strong>RNF-01: Segurança da Carga:</strong> O software de controle de motores deve implementar rampas de aceleração e desaceleração suaves para garantir que a carga frágil não sofra impactos durante todo o percurso.</li>
+<li><strong>RNF-02: Execução em Tempo Real:</strong> O sistema embarcado deve processar os comandos de movimento e controlar os motores em tempo real, sem atrasos perceptíveis que comprometam a precisão da trajetória.</li>
+<li><strong>RNF-03: Comunicação Sem Fio:</strong> A comunicação entre a interface gráfica e o carrinho deve ser realizada exclusivamente por uma tecnologia sem fio (ex: Wi-Fi ou Bluetooth), garantindo estabilidade na transmissão de dados a uma distância operacional definida.</li>
+</ul>
+<h3 id="should-have">Should Have:</h3>
+<ul>
+<li><strong>RNF-04: Confiabilidade da Persistência:</strong> O sistema deve ser capaz de armazenar os dados da missão localmente no carrinho e reenviá-los caso a primeira tentativa de transmissão para o banco de dados falhe.</li>
+</ul>
+<h3 id="could-have">Could Have:</h3>
+<ul>
+<li><strong>RNF-05: Design Responsivo:</strong> A interface gráfica poderá ser projetada para se adaptar a diferentes tamanhos de tela, possibilitando o uso em desktops e tablets.</li>
+</ul>
+<h2 id="diagrama-bpmn">Diagrama BPMN</h2>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../diagramas/diagrama_bpmn.svg" data-desc-position="bottom"><img alt="Diagrama BPMN" src="../diagramas/diagrama_bpmn.svg"></a></p>
+<h2 id="diagrama-de-casos-de-uso">Diagrama de Casos de Uso</h2>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../diagramas/dcu.png" data-desc-position="bottom"><img alt="Diagrama BPMN" src="../diagramas/dcu.png"></a></p>
+<h2 id="diagrama-entidade-relacionamento-der">Diagrama Entidade-Relacionamento (DER)</h2>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../diagramas/der_pi1.png" data-desc-position="bottom"><img alt="DER" src="../diagramas/der_pi1.png"></a></p>
+<h2 id="diagrama-de-estados">Diagrama de Estados</h2>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../diagramas/diagrama_de_estados.png" data-desc-position="bottom"><img alt="DER" src="../diagramas/diagrama_de_estados.png"></a></p>
+<h2 id="analise-de-dados">Análise de Dados</h2>
+<p>Com base nos requisitos definidos e na modelagem do banco de dados, a análise será realizada sobre as variáveis de telemetria coletadas durante a execução das rotas. As variáveis consideradas são:</p>
+<ul>
+<li><strong>Velocidade média</strong>: avalia o desempenho do veículo em diferentes rotas.  </li>
+<li><strong>Corrente média</strong>: permite estimar o consumo elétrico do sistema.  </li>
+<li><strong>Tensão de operação</strong>: monitora as condições de alimentação do veículo.  </li>
+<li><strong>Energia consumida (J)</strong>: calculada a partir da relação entre tensão, corrente e tempo de uso.  </li>
+<li><strong>Distância percorrida</strong>: associada diretamente ao desempenho físico do veículo.  </li>
+<li><strong>Tempo de execução</strong>: obtido a partir do intervalo entre início e fim de cada rota.  </li>
+<li><strong>Status de execução</strong>: indica se a operação foi concluída corretamente ou se ocorreram falhas.  </li>
+</ul>
+<p>A análise numérica será conduzida por meio de tabelas contendo valores coletados, possibilitando o cálculo de médias, máximos, mínimos e comparações entre diferentes execuções.  </p>
+<p>Complementarmente, a análise gráfica será realizada por meio de representações visuais, como gráficos de barras, linhas e dispersão, permitindo identificar tendências, padrões e correlações entre variáveis — por exemplo, entre <em>velocidade média</em> e <em>energia consumida</em>.  </p>
+<p>O tempo total de cada execução será calculado a partir dos campos <code>hora_inicio</code> e <code>hora_fim</code> registrados na entidade <strong>Rota</strong>, conforme a equação: <em>tempo_rota = hora_fim - hora_inicio</em></p>
+<p>Esse indicador possibilita avaliar a eficiência global da rota e identificar possíveis gargalos no percurso.  </p>
+<p>Adicionalmente, será gerada uma representação gráfica da trajetória percorrida pelo carrinho, construída a partir das instruções armazenadas na entidade <strong>Instrução</strong>. Cada comando de <em>giro</em> ajusta a orientação do veículo, enquanto os comandos de <em>deslocamento</em> determinam a progressão em coordenadas <code>(x,y)</code>. Os pontos sucessivos serão conectados em um gráfico bidimensional, fornecendo uma visualização intuitiva da rota executada.  </p>
+<p>Com essa abordagem, o sistema permite não apenas a avaliação quantitativa das variáveis de desempenho, mas também a interpretação visual do comportamento do veículo em diferentes rotas.</p>
+<h2 id="prototipo-funcional-do-software">Protótipo Funcional do Software</h2>
+<div style="display:flex; justify-content:center;">
+  <iframe style="border:1px solid rgba(0,0,0,.1);" width="325" height="575" src="https://embed.figma.com/proto/Ghq0pZ1dvuv1xNkvyMa43w/ProjetoSoftwarePI1?node-id=2-2&amp;p=f&amp;t=CXwYJlONPR1RTl9I-0&amp;scaling=scale-down&amp;content-scaling=fixed&amp;page-id=0%3A1&amp;starting-point-node-id=2%3A2&amp;embed-host=share" allowfullscreen>
+  </iframe>
+</div>
+
+<center>
+<a href="https://www.figma.com/design/Ghq0pZ1dvuv1xNkvyMa43w/ProjetoSoftwarePI1?node-id=0-1&amp;p=f&amp;t=3yl7xwVXyUSETxdb-0">Clique aqui para acessar o protótipo</a>
+</center>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Voltar ao topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "Mais 1 nesta p\u00e1gina", "search.result.more.other": "Mais # nesta p\u00e1gina", "search.result.none": "Nenhum resultado encontrado", "search.result.one": "1 resultado encontrado", "search.result.other": "# resultados encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>
