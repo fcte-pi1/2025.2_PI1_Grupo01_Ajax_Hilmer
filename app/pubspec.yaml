@@ -1,0 +1,50 @@
+name: app
+description: "A new Flutter project."
+publish_to: 'none' 
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'  
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_blue_plus: ^1.15.9 
+  http: ^1.2.1
+  intl: ^0.19.0 
+  cupertino_icons: ^1.0.8
+
+  get_it: ^7.6.7       # Para o Service Locator (Singleton)
+  flutter_dotenv: ^5.1.0 # Para carregar o .env
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  mockito: ^5.4.4
+  build_runner: ^2.4.0
+  coverage: ^1.15.0
+
+flutter:
+  uses-material-design: true
+
+  # --- ADIÇÃO PARA O ARQUIVO .ENV ---
+  # Isso informa ao Flutter para incluir o arquivo .env no "pacote" do app
+  assets:
+    - .env
+
+  fonts:
+    - family: Poppins 
+      fonts:
+        - asset: assets/fonts/Poppins-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Poppins-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
