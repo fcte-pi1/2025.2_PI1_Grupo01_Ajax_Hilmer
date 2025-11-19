@@ -1,16 +1,31 @@
-# app
 
-A new Flutter project.
+## Guia rápido para rodar o aplicativo mobile.
 
-## Getting Started
+## O que você precisa ter instalado
 
-This project is a starting point for a Flutter application.
+* **Flutter SDK:** Versão 3.30 ou superior (Stable channel).
+* **VS Code:** Com as extensões oficiais do **Flutter** e **Dart**.
+* **Dispositivo:**
+    * Celular Android físico (conectado via USB) -> **Obrigatório para testar Bluetooth**.
+    * Emulador Android -> Serve apenas para ver telas e testar API.
 
-A few resources to get you started if this is your first Flutter project:
+## Configuração do .env
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+O projeto usa variáveis de ambiente para saber onde está a API.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1.  Crie um arquivo chamado **`.env`** na raiz desta pasta (`app/`).
+2.  Cole o seguinte conteúdo dentro dele:
+``API_BASE_URL=http://localhost:8000``
+
+## Como rodar
+
+1. Com o backend rodando, abra o terminal na pasta `app/`
+2. Baixe as dependências:
+
+``flutter pub get``
+
+3. Conecte seu celular (com Depuração USB ativa) ou abra o emulador via android studio.
+
+4. Inicie o app com o comando:
+
+``flutter run``
