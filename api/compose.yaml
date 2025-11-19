@@ -1,0 +1,30 @@
+services:
+  api_db:
+    image: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_DB: app_db
+      POSTGRES_PASSWORD: app_password
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d app_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  api:
+    image: api
+    entrypoint: ./entrypoint.sh
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      api_db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://app_user:app_password@api_db:5432/app_db
+
+volumes:
+  pgdata:
