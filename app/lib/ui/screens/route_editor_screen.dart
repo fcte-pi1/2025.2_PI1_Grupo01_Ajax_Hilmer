@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/trajectory_command.dart';
 import 'previous_routes_screen.dart';
+import 'route_execution_screen.dart';
 import '../../services/ble_manager.dart';
 import '../../services/api_service.dart';
 import '../../service_locator.dart';
 
 // Removemos o parâmetro do construtor
 class RouteEditorScreen extends StatefulWidget {
-  
-  const RouteEditorScreen({super.key}); 
+  const RouteEditorScreen({super.key});
 
   @override
   State<RouteEditorScreen> createState() => _RouteEditorScreenState();
@@ -23,6 +23,9 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   final List<TrajectoryCommand> _commands = [];
   bool _isSending = false; // Controla estado de envio/loading
 
+  // MODO TESTE: mude para true para simular sem Bluetooth
+  final bool _testMode = true;
+
   //Pega as instâncias do locator
   late final BleManager _bleManager = locator<BleManager>();
   final ApiService _apiService = locator<ApiService>();
@@ -30,7 +33,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     _setupConnectionLostListener(); // Chama a função corrigida
   }
 
@@ -40,7 +43,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   void _handleConnectionLost() {
- 
     final state = _bleManager.connectionState.value;
     print("[RouteEditor] Listener: Estado mudou para $state");
     if (state == BluetoothConnectionState.disconnected && mounted) {
@@ -53,7 +55,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
 
   @override
   void dispose() {
- 
     _bleManager.connectionState.removeListener(_handleConnectionLost);
     _distanceController.dispose();
     _angleController.dispose();
@@ -61,7 +62,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   void _addCommand(CommandType type) {
-  
     if (_isSending) return;
     int? value;
     TextEditingController? controllerToClear;
@@ -98,7 +98,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   void _removeCommand(int index) {
-  
     if (_isSending) return;
     setState(() {
       _commands.removeAt(index);
@@ -106,7 +105,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   Future<void> _startRoute() async {
-  
     if (_isSending) return; // Evita envio duplo
     if (_commands.isEmpty) {
       _showFeedbackSnackBar(
@@ -227,30 +225,47 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
         "[RouteEditor] Iniciando percurso (confirmado) com string: $commandsString",
       );
 
-      bool savedToApi = await _apiService.saveRoute(commandsString);
-      if (mounted) {
-        _showFeedbackSnackBar(
-          savedToApi
-              ? 'Rota salva no servidor com sucesso.'
-              : 'Falha ao salvar rota no servidor.',
-          isError: !savedToApi,
-        );
+      // Modo teste: pula a API
+      if (!_testMode) {
+        bool savedToApi = await _apiService.saveRoute(commandsString);
+        if (mounted) {
+          _showFeedbackSnackBar(
+            savedToApi
+                ? 'Rota salva no servidor com sucesso.'
+                : 'Falha ao salvar rota no servidor.',
+            isError: !savedToApi,
+          );
+        }
+        await Future.delayed(const Duration(milliseconds: 300));
       }
-      await Future.delayed(const Duration(milliseconds: 300));
 
-      // Envia para o carrinho via BLE
+      // Envia para o carrinho via BLE (ou simula em modo teste)
       if (mounted) {
-        // Verifica novamente se a tela ainda existe
-        bool sentToDevice = await _bleManager.sendTrajectory(commandsString);
+        bool sentToDevice;
+
+        if (_testMode) {
+          // Simula envio bem-sucedido
+          print("[RouteEditor] MODO TESTE: Simulando envio...");
+          await Future.delayed(const Duration(milliseconds: 500));
+          sentToDevice = true;
+        } else {
+          // Envia de verdade via BLE
+          sentToDevice = await _bleManager.sendTrajectory(commandsString);
+        }
+
         if (sentToDevice) {
-          print("[RouteEditor] Comandos enviados para o carrinho.");
-          if (mounted)
-            _showFeedbackSnackBar(
-              'Comandos enviados para o carrinho!',
-              isError: false,
-              color: Colors.blueAccent,
+          print("[RouteEditor] Comandos enviados (ou simulados).");
+          // Navega para tela de execução do percurso
+          if (mounted) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => RouteExecutionScreen(
+                  commands: List.from(_commands),
+                  testMode: _testMode, // Passa o modo de teste
+                ),
+              ),
             );
-          //Após enviar, ir para tela de executando percurso
+          }
         } else {
           print("[RouteEditor] Falha ao enviar comandos.");
           if (mounted)
@@ -274,7 +289,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   void _viewPreviousRoutes() {
-  
     if (_isSending) return;
     print("[RouteEditor] Navegando para Rotas Anteriores...");
     Navigator.push(
@@ -285,7 +299,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
 
   // Mostra uma mensagem na parte inferior (SnackBar)
   void _showFeedbackSnackBar(
-  
     String message, {
     bool isError = false,
     Color? color,
@@ -295,11 +308,10 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor:
-            color ??
-                (isError
-                    ? Colors.redAccent
-                    : Colors.green), // Usa cor passada ou padrão
+        backgroundColor: color ??
+            (isError
+                ? Colors.redAccent
+                : Colors.green), // Usa cor passada ou padrão
         duration: Duration(seconds: isError ? 3 : 2), // Mais tempo para erros
       ),
     );
@@ -308,18 +320,17 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   // build UI
   @override
   Widget build(BuildContext context) {
-
     final textTheme = Theme.of(context).textTheme;
     // Pega os estilos dos botões do tema para consistência
-    final buttonStylePrimary = Theme.of(context).elevatedButtonTheme.style
-        ?.copyWith(
-          backgroundColor: MaterialStateProperty.all(
-            const Color(0xFF00D4FF),
-          ), // Ciano
-          foregroundColor: MaterialStateProperty.all(
-            const Color(0xFF0D0F14),
-          ), // Texto escuro
-        );
+    final buttonStylePrimary =
+        Theme.of(context).elevatedButtonTheme.style?.copyWith(
+              backgroundColor: MaterialStateProperty.all(
+                const Color(0xFF00D4FF),
+              ), // Ciano
+              foregroundColor: MaterialStateProperty.all(
+                const Color(0xFF0D0F14),
+              ), // Texto escuro
+            );
     final buttonStyleSecondary = Theme.of(context).outlinedButtonTheme.style;
 
     return Scaffold(
@@ -445,9 +456,8 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
               // Botões de ação inferiores
               ElevatedButton(
                 style: buttonStylePrimary, // Estilo Ciano
-                onPressed: _isSending
-                    ? null
-                    : _startRoute, // Desabilita se enviando
+                onPressed:
+                    _isSending ? null : _startRoute, // Desabilita se enviando
                 // Mostra loading ou texto
                 child: _isSending
                     ? const SizedBox(

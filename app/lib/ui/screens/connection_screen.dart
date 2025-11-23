@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:app/services/ble_manager.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'route_editor_screen.dart';
-import '../../service_locator.dart'; 
+import '../../service_locator.dart';
 
 class ConnectionScreen extends StatefulWidget {
   const ConnectionScreen({super.key});
@@ -16,64 +16,64 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
   late final BleManager _bleManager = locator<BleManager>();
 
   // Lista Mock COMENTAR/REMOVER para uso real
-  final List<ScanResult> _mockScanResults = [
-    
-    ScanResult(
-      device: BluetoothDevice(
-        remoteId: const DeviceIdentifier('00:11:22:33:AA:BB'),
-      ),
-      advertisementData: AdvertisementData(
-        advName: 'Carrinho_PI1_001',
-        txPowerLevel: null,
-        appearance: null,
-        connectable: true,
-        manufacturerData: {},
-        serviceData: {},
-        serviceUuids: [],
-      ),
-      rssi: -50,
-      timeStamp: DateTime.now(),
-    ),
-    ScanResult(
-      device: BluetoothDevice(
-        remoteId: const DeviceIdentifier('11:22:33:44:CC:DD'),
-      ),
-      advertisementData: AdvertisementData(
-        advName: 'Outro_Dispositivo_BT',
-        txPowerLevel: null,
-        appearance: null,
-        connectable: true,
-        manufacturerData: {},
-        serviceData: {},
-        serviceUuids: [],
-      ),
-      rssi: -65,
-      timeStamp: DateTime.now(),
-    ),
-    ScanResult(
-      device: BluetoothDevice(
-        remoteId: const DeviceIdentifier('22:33:44:55:EE:FF'),
-      ),
-      advertisementData: AdvertisementData(
-        advName: '',
-        txPowerLevel: null,
-        appearance: null,
-        connectable: false,
-        manufacturerData: {},
-        serviceData: {},
-        serviceUuids: [],
-      ),
-      rssi: -80,
-      timeStamp: DateTime.now(),
-    ),
-  ];
+  // final List<ScanResult> _mockScanResults = [
+
+  //   ScanResult(
+  //     device: BluetoothDevice(
+  //       remoteId: const DeviceIdentifier('00:11:22:33:AA:BB'),
+  //     ),
+  //     advertisementData: AdvertisementData(
+  //       advName: 'Carrinho_PI1_001',
+  //       txPowerLevel: null,
+  //       appearance: null,
+  //       connectable: true,
+  //       manufacturerData: {},
+  //       serviceData: {},
+  //       serviceUuids: [],
+  //     ),
+  //     rssi: -50,
+  //     timeStamp: DateTime.now(),
+  //   ),
+  //   ScanResult(
+  //     device: BluetoothDevice(
+  //       remoteId: const DeviceIdentifier('11:22:33:44:CC:DD'),
+  //     ),
+  //     advertisementData: AdvertisementData(
+  //       advName: 'Outro_Dispositivo_BT',
+  //       txPowerLevel: null,
+  //       appearance: null,
+  //       connectable: true,
+  //       manufacturerData: {},
+  //       serviceData: {},
+  //       serviceUuids: [],
+  //     ),
+  //     rssi: -65,
+  //     timeStamp: DateTime.now(),
+  //   ),
+  //   ScanResult(
+  //     device: BluetoothDevice(
+  //       remoteId: const DeviceIdentifier('22:33:44:55:EE:FF'),
+  //     ),
+  //     advertisementData: AdvertisementData(
+  //       advName: '',
+  //       txPowerLevel: null,
+  //       appearance: null,
+  //       connectable: false,
+  //       manufacturerData: {},
+  //       serviceData: {},
+  //       serviceUuids: [],
+  //     ),
+  //     rssi: -80,
+  //     timeStamp: DateTime.now(),
+  //   ),
+  // ];
 
   @override
   void initState() {
     super.initState();
 
     // Inicializa com dados mockados (COMENTE a linha abaixo para usar scan real)
-    _bleManager.scanResults.value = _mockScanResults;
+    // _bleManager.scanResults.value = _mockScanResults;
     _setupConnectionListener(); // Configura o listener para navegação
   }
 
@@ -90,13 +90,12 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     if (!mounted) return; // Garante que a tela ainda existe
 
     if (state == BluetoothConnectionState.connected) {
-      // Verifica se a característica foi encontrada 
+      // Verifica se a característica foi encontrada
       if (_bleManager.isReadyToSend) {
         // Adicionar getter `isReadyToSend` no BleManager
         print("[ConnectionScreen] Conectado e pronto! Navegando...");
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-           
             builder: (context) => RouteEditorScreen(),
           ),
         );
@@ -125,18 +124,17 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     _bleManager.connectionState.removeListener(
       _handleConnectionChange,
     ); // Remove listener
-    
+
     // 5. REMOVA/COMENTE A LINHA ABAIXO:
     // Não damos "dispose" em um Singleton, pois ele deve viver
     // durante todo o ciclo de vida do app.
-    // _bleManager.dispose(); 
-    
+    // _bleManager.dispose();
+
     super.dispose();
   }
 
   // Inicia o scan
   void _startScanning() {
-   
     _bleManager.scanResults.value =
         []; // Limpa a lista antes de escanear de verdade
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -167,8 +165,29 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
       ),
     );
     /*
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    ... (resto do código comentado permanece igual)
+ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Conectando a $deviceName...')));
+    _bleManager.connectToDevice(device).then((success) {
+      // Se connectToDevice retorna false (falha antes do listener)
+      if (!success &&
+          mounted &&
+          _bleManager.connectionState.value !=
+              BluetoothConnectionState.connected) {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Falha ao conectar a $deviceName'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+       
+
+      // Se a conexão for bem sucedida E a característica for encontrada,
+      // o listener _handleConnectionChange cuidará da navegação.
+    });
     */
   }
 
@@ -179,7 +198,6 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
 
   @override
   Widget build(BuildContext context) {
- 
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -306,8 +324,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
                     builder: (context, connState, _) {
                       Widget buttonChild;
                       VoidCallback? onPressedAction;
-                      final bool isBusy =
-                          isScanning ||
+                      final bool isBusy = isScanning ||
                           connState == BluetoothConnectionState.connecting ||
                           connState == BluetoothConnectionState.disconnecting;
 
@@ -371,6 +388,27 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
                     },
                   );
                 },
+              ),
+              const SizedBox(height: 10),
+
+              // Botão MODO TESTE (remover em produção)
+              TextButton(
+                onPressed: () {
+                  // Pula direto para o RouteEditor sem Bluetooth
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => const RouteEditorScreen(),
+                    ),
+                  );
+                },
+                child: Text(
+                  '🧪 Modo Teste (sem Bluetooth)',
+                  style: TextStyle(
+                    color: Colors.orange.shade300,
+                    fontSize: 14,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
               ),
               const SizedBox(height: 10),
             ],

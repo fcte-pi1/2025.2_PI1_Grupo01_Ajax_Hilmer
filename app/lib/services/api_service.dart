@@ -2,7 +2,7 @@ import 'dart:convert';
 // import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-// import 'package:flutter/foundation.dart' show kReleaseMode; 
+// import 'package:flutter/foundation.dart' show kReleaseMode;
 
 class ApiService {
   late final String _baseUrl;
@@ -17,7 +17,6 @@ class ApiService {
 
   //POST /routes/
   Future<bool> saveRoute(String commandsString) async {
-
     final url = Uri.parse('$_baseUrl/routes/');
     print("[ApiService] POST $url \n Body: {'commands': '$commandsString'}");
     try {
@@ -53,11 +52,9 @@ class ApiService {
 
     try {
       final response = await http
-          .get(url, headers: {'Accept': 'application/json'})
-          .timeout(_timeout);
+          .get(url, headers: {'Accept': 'application/json'}).timeout(_timeout);
 
       if (response.statusCode == 200) {
-       
         Map<String, dynamic> responseData = jsonDecode(
           utf8.decode(response.bodyBytes),
         );
@@ -80,5 +77,33 @@ class ApiService {
     }
   }
 
-  // TODO: Adicionar métodos para Telemetria
+  // GET /telemetry/:route_id - Busca telemetria de uma rota específica
+  Future<Map<String, dynamic>?> getTelemetryByRouteId(int routeId) async {
+    final url = Uri.parse('$_baseUrl/telemetry/$routeId');
+    print("[ApiService] GET $url");
+
+    try {
+      final response = await http
+          .get(url, headers: {'Accept': 'application/json'}).timeout(_timeout);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
+        print("[ApiService] Telemetria recebida para rota $routeId");
+        return data;
+      } else if (response.statusCode == 404) {
+        print("[ApiService] Telemetria não encontrada para rota $routeId");
+        return null;
+      } else {
+        print(
+          "[ApiService] Erro ao buscar telemetria: ${response.statusCode} - ${response.body}",
+        );
+        return null;
+      }
+    } catch (e) {
+      print("[ApiService] Exceção ao buscar telemetria: $e");
+      return null;
+    }
+  }
 }

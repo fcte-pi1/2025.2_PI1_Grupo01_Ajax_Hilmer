@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class BleManager {
-  BleManager(); 
+  BleManager();
 
   // Notificadores de Estado
   final ValueNotifier<bool> isScanning = ValueNotifier(false);
@@ -18,6 +18,18 @@ class BleManager {
   StreamSubscription<List<ScanResult>>? _scanResultsSubscription;
   StreamSubscription<BluetoothConnectionState>? _connectionStateSubscription;
   BluetoothCharacteristic? _writeCharacteristic; // Característica para escrita
+  BluetoothCharacteristic?
+      _notifyCharacteristic; // Característica para receber dados
+  StreamSubscription<List<int>>? _notifySubscription;
+
+  // Stream controller para telemetria (dados que vêm do carrinho)
+  final StreamController<Map<String, dynamic>> _telemetryController =
+      StreamController<Map<String, dynamic>>.broadcast();
+
+  /// Stream que emite dados de telemetria do carrinho
+  /// Formato esperado: {'status': 'success'/'error', 'time': 20.5, 'distance': 150, 'message': '...'}
+  Stream<Map<String, dynamic>> get telemetryStream =>
+      _telemetryController.stream;
 
 // Scan
   Future<void> startScan({int durationSeconds = 5}) async {
@@ -173,14 +185,17 @@ class BleManager {
   void dispose() {
     print("[BleManager] Disposing...");
     stopScan();
+    _scanResultsSubscription?.cancel();
     _connectionStateSubscription?.cancel();
+    _notifySubscription?.cancel();
+    _telemetryController.close();
     // Tenta desconectar, mas não espera indefinidamente para não bloquear
     connectedDevice.value
         ?.disconnect()
         .timeout(const Duration(seconds: 1))
         .catchError((e) {
-          print("[BleManager] Timeout/Erro ao desconectar no dispose: $e");
-        });
+      print("[BleManager] Timeout/Erro ao desconectar no dispose: $e");
+    });
     isScanning.dispose();
     scanResults.dispose();
     connectedDevice.dispose();
@@ -202,10 +217,9 @@ class BleManager {
     _writeCharacteristic = null; // Reseta antes de procurar
     try {
       print("[BleManager] Descobrindo serviços para ${device.remoteId}...");
-      // Define um timeout para a descoberta de serviços
       List<BluetoothService> services = await device.discoverServices().timeout(
-        const Duration(seconds: 10),
-      ); // Timeout de 10s
+            const Duration(seconds: 10),
+          );
       print("[BleManager] ${services.length} serviços encontrados.");
 
       // CONFIGURAÇÃO ESPECÍFICA DO CARRINHO AQUI
@@ -213,6 +227,8 @@ class BleManager {
       // Estes são exemplos comuns para módulos como HM-10/HC-08
       const String SERVICE_UUID_STR = "0000ffe0-0000-1000-8000-00805f9b34fb";
       const String WRITE_CHAR_UUID_STR = "0000ffe1-0000-1000-8000-00805f9b34fb";
+      const String NOTIFY_CHAR_UUID_STR =
+          "0000ffe1-0000-1000-8000-00805f9b34fb"; // Mesma para read/write
 
       for (var service in services) {
         // Compara os UUIDs convertendo as strings para Guid
@@ -228,15 +244,22 @@ class BleManager {
                 print(
                   "[BleManager]       -> Permite escrita! Característica guardada.",
                 );
-                _writeCharacteristic = char; // Guarda a referência
-                return true; 
-              } else {
+                _writeCharacteristic = char;
+              }
+            }
+            // Procura característica de notificação (pode ser a mesma)
+            if (char.uuid == Guid(NOTIFY_CHAR_UUID_STR)) {
+              if (char.properties.notify || char.properties.indicate) {
                 print(
-                  "[BleManager]       -> ERRO: Característica encontrada, mas não permite escrita.",
+                  "[BleManager]       -> Característica de notificação encontrada!",
                 );
+                _notifyCharacteristic = char;
+                await _setupNotifications(char);
               }
             }
           }
+          // Retorna true se encontrou a característica de escrita
+          if (_writeCharacteristic != null) return true;
         }
       }
       print(
@@ -246,6 +269,57 @@ class BleManager {
     } catch (e) {
       print("[BleManager] Exceção ao descobrir serviços/timeout: $e");
       return false; // Falha na descoberta
+    }
+  }
+
+  /// Configura notificações para receber dados do carrinho em tempo real
+  Future<void> _setupNotifications(BluetoothCharacteristic char) async {
+    try {
+      await _notifySubscription?.cancel();
+      await char.setNotifyValue(true);
+      print(
+          "[BleManager] Notificações habilitadas para receber dados do carrinho.");
+
+      _notifySubscription = char.lastValueStream.listen((value) {
+        if (value.isNotEmpty) {
+          try {
+            // Decodifica os dados recebidos do carrinho
+            String dataStr = utf8.decode(value).trim();
+            print("[BleManager] 📩 Dados recebidos do carrinho: $dataStr");
+
+            // Tenta parsear como JSON
+            // Formato esperado: {"status":"success","time":20.5,"distance":150}
+            // ou: {"status":"error","message":"Obstáculo detectado"}
+            Map<String, dynamic> telemetry;
+
+            try {
+              final decoded = jsonDecode(dataStr);
+              if (decoded is Map<String, dynamic>) {
+                telemetry = decoded;
+                telemetry['timestamp'] = DateTime.now().millisecondsSinceEpoch;
+              } else {
+                telemetry = {
+                  'raw': dataStr,
+                  'timestamp': DateTime.now().millisecondsSinceEpoch
+                };
+              }
+            } catch (_) {
+              // Se não for JSON válido, envia como raw
+              telemetry = {
+                'raw': dataStr,
+                'timestamp': DateTime.now().millisecondsSinceEpoch
+              };
+            }
+
+            // Emite no stream para quem estiver escutando
+            _telemetryController.add(telemetry);
+          } catch (e) {
+            print("[BleManager] ❌ Erro ao processar dados: $e");
+          }
+        }
+      });
+    } catch (e) {
+      print("[BleManager] ❌ Erro ao configurar notificações: $e");
     }
   }
 

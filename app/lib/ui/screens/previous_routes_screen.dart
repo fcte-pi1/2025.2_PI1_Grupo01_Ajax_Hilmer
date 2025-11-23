@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
-import '../../service_locator.dart'; 
+import '../../service_locator.dart';
+import 'route_detailed_analysis_screen.dart';
 
 class PreviousRoutesScreen extends StatefulWidget {
   const PreviousRoutesScreen({super.key});
@@ -10,7 +11,6 @@ class PreviousRoutesScreen extends StatefulWidget {
 }
 
 class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
-  
   final ApiService _apiService = locator<ApiService>();
 
   final ScrollController _scrollController =
@@ -43,7 +43,6 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   // Listener do Scroll: chamado toda vez que o usuário rola
   void _onScroll() {
-
     // Verifica se estamos perto do fim da lista (ex: 90% rolado)
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.9) {
@@ -54,7 +53,6 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   // Busca a primeira página de rotas
   Future<void> _fetchInitialRoutes() async {
-
     // Evita múltiplas chamadas
     if (_isLoading) return;
 
@@ -74,8 +72,7 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
         _routes.clear(); // Limpa a lista antes de adicionar os primeiros
         _routes.addAll(newRoutes);
         _offset = newRoutes.length; // Atualiza o offset
-        _hasMore =
-            newRoutes.length ==
+        _hasMore = newRoutes.length ==
             _limit; // Se recebeu menos que o limite, não há mais
         _isLoading = false;
       });
@@ -91,7 +88,6 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   // Busca as próximas páginas de rotas
   Future<void> _fetchMoreRoutes() async {
-  
     // Condições de guarda: não busca se já estiver buscando, ou se não houver mais dados
     if (_isLoading || _isLoadingMore || !_hasMore) return;
 
@@ -130,7 +126,6 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
   }
 
   Future<void> _refreshRoutes() async {
-  
     print("[PreviousRoutes] Atualizando rotas...");
     // Reseta o estado e busca a primeira página novamente
     _offset = 0;
@@ -141,7 +136,6 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   // Formata a data (igual antes)
   String _formatDateTime(String? dateTimeString) {
-  
     if (dateTimeString == null || dateTimeString.isEmpty)
       return 'Data indisponível';
     try {
@@ -154,7 +148,6 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   @override
   Widget build(BuildContext context) {
- 
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -165,7 +158,6 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
 
   // Widget auxiliar para construir o corpo da tela
   Widget _buildBody(TextTheme textTheme) {
-  
     // Estado 1: Carregamento Inicial
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -261,8 +253,6 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
           final route = _routes[index];
           final routeId = route['id'] ?? (index + 1);
           final createdAt = _formatDateTime(route['created_at'] as String?);
-          final commands =
-              route['commands'] as String? ?? 'Comandos indisponíveis';
 
           // Constrói o Card (igual antes)
           return Card(
@@ -304,25 +294,51 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
               //     overflow: TextOverflow.ellipsis,
               //   ),
               // ),
-              onTap: () {
+              onTap: () async {
                 print('[PreviousRoutes] Rota selecionada: ID $routeId');
-                ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'ID: $routeId\nComandos: $commands',
-                      maxLines: 5,
-                      overflow: TextOverflow.ellipsis,
+
+                // Busca telemetria da rota
+                final telemetry =
+                    await _apiService.getTelemetryByRouteId(routeId);
+
+                if (!mounted) return;
+
+                if (telemetry != null) {
+                  // Navega para análise detalhada
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => RouteDetailedAnalysisScreen(
+                        averageSpeed:
+                            (telemetry['average_speed'] as num?)?.toDouble() ??
+                                0.0,
+                        averageCurrent: (telemetry['average_current'] as num?)
+                                ?.toDouble() ??
+                            0.0,
+                        operatingVoltage: 16.0, // Valor padrão (não vem da API)
+                        energyConsumed: (telemetry['energy_consumed'] as num?)
+                                ?.toDouble() ??
+                            0.0,
+                        distanceTraveled:
+                            (telemetry['distance_traveled'] as num?)
+                                    ?.toDouble() ??
+                                0.0,
+                        executionTime: ((telemetry['distance_traveled'] as num?)
+                                    ?.toDouble() ??
+                                0.0) /
+                            ((telemetry['average_speed'] as num?)?.toDouble() ??
+                                1.0),
+                      ),
                     ),
-                    duration: const Duration(seconds: 5),
-                    action: SnackBarAction(
-                      label: 'FECHAR',
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      },
+                  );
+                } else {
+                  // Telemetria não encontrada
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Telemetria não encontrada para esta rota'),
+                      backgroundColor: Colors.orange,
                     ),
-                  ),
-                );
+                  );
+                }
               },
               splashColor: const Color(0xFF33DDFF),
             ),
