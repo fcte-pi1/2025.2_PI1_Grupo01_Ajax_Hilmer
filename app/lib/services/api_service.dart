@@ -81,4 +81,40 @@ class ApiService {
   }
 
   // TODO: Adicionar métodos para Telemetria
+
+  // GET /telemetries/?limit=1&offset=0
+  Future<Map<String, dynamic>?> getLatestTelemetry() async {
+    // Busca o último registro de telemetria (limit=1, offset=0)
+    final url = Uri.parse('$_baseUrl/telemetries/?limit=1&offset=0');
+    print("[ApiService] GET $url");
+
+    try {
+      final response = await http
+          .get(url, headers: {'Accept': 'application/json'})
+          .timeout(_timeout);
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
+        final List<dynamic> data = responseData['telemetries'] as List<dynamic>;
+
+        if (data.isNotEmpty) {
+          print("[ApiService] Telemetria recebida com sucesso.");
+          return data.first as Map<String, dynamic>;
+        } else {
+          print("[ApiService] Nenhuma telemetria encontrada.");
+          return null;
+        }
+      } else {
+        print(
+          "[ApiService] Erro ao buscar telemetria: ${response.statusCode} - ${response.body}",
+        );
+        return null;
+      }
+    } catch (e) {
+      print("[ApiService] Exceção ao buscar telemetria: $e");
+      throw Exception('Falha ao buscar telemetria: $e');
+    }
+  }
 }
