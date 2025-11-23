@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'ui/screens/connection_screen.dart';
+import 'ui/screens/trajectory_data_screen.dart';
 import 'service_locator.dart'; 
 
 Future<void> main() async { 
