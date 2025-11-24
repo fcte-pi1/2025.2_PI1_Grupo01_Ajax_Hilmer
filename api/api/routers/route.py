@@ -30,9 +30,15 @@ Session = Annotated[AsyncSession, Depends(get_session)]
     response_class=JSONResponse,
 )
 async def read_routes(session: Session, filter: Filter):
-    routes = await session.scalars(
-        select(Route).limit(filter.limit).offset(filter.offset)
-    )
+    query = select(Route)
+
+    if filter.order_by == 'desc':
+        query = query.order_by(Route.created_at.desc())
+    else:
+        query = query.order_by(Route.created_at.asc())
+
+    query = query.limit(filter.limit).offset(filter.offset)
+    routes = await session.scalars(query)
 
     return {'routes': routes}
 
