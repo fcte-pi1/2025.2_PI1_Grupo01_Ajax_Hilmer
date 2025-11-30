@@ -125,18 +125,53 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
       _handleConnectionChange,
     ); // Remove listener
 
-    // 5. REMOVA/COMENTE A LINHA ABAIXO:
-    // Não damos "dispose" em um Singleton, pois ele deve viver
-    // durante todo o ciclo de vida do app.
-    // _bleManager.dispose();
-
     super.dispose();
   }
 
-  // Inicia o scan
-  void _startScanning() {
-    _bleManager.scanResults.value =
-        []; // Limpa a lista antes de escanear de verdade
+  // Inicia o scan COM verificação de permissões
+  void _startScanning() async {
+    // Verifica e solicita permissões de Bluetooth
+    try {
+      // Verifica se Bluetooth está suportado
+      if (await FlutterBluePlus.isSupported == false) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Bluetooth não suportado neste dispositivo'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Verifica se Bluetooth está ligado
+      var state = await FlutterBluePlus.adapterState.first;
+      if (state != BluetoothAdapterState.on) {
+        print("[ConnectionScreen] Bluetooth desligado. Tentando ligar...");
+
+        // Tenta ligar o Bluetooth (isso solicita permissão no Android 12+)
+        try {
+          await FlutterBluePlus.turnOn();
+        } catch (e) {
+          print("[ConnectionScreen] Erro ao ligar Bluetooth: $e");
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Por favor, ligue o Bluetooth nas configurações'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+          return;
+        }
+      }
+    } catch (e) {
+      print("[ConnectionScreen] Erro ao verificar Bluetooth: $e");
+    }
+
+    // Agora faz o scan
+    _bleManager.scanResults.value = [];
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -147,8 +182,8 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     _bleManager.startScan();
   }
 
-  // Tenta conectar
-  void _connect(BluetoothDevice device) {
+  // Tenta conectar - AGUARDA conexão completa antes de navegar
+  void _connect(BluetoothDevice device) async {
     if (_bleManager.connectionState.value ==
             BluetoothConnectionState.connecting ||
         _bleManager.connectionState.value ==
@@ -159,36 +194,63 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     if (deviceName.isEmpty) deviceName = device.advName;
     if (deviceName.isEmpty) deviceName = device.remoteId.toString();
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => RouteEditorScreen(),
-      ),
-    );
-    /*
-ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('Conectando a $deviceName...')));
-    _bleManager.connectToDevice(device).then((success) {
-      // Se connectToDevice retorna false (falha antes do listener)
-      if (!success &&
-          mounted &&
-          _bleManager.connectionState.value !=
-              BluetoothConnectionState.connected) {
-        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Falha ao conectar a $deviceName'),
-            backgroundColor: Colors.redAccent,
+    ).showSnackBar(SnackBar(
+      content: Row(
+        children: [
+          SizedBox(
+            width: 20,
+            height: 20,
+            child:
+                CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
           ),
-        );
-      }
-       
+          SizedBox(width: 12),
+          Text('Conectando a $deviceName...'),
+        ],
+      ),
+      duration: Duration(seconds: 30),
+    ));
 
-      // Se a conexão for bem sucedida E a característica for encontrada,
-      // o listener _handleConnectionChange cuidará da navegação.
-    });
-    */
+    // ESPERA a conexão completar ANTES de navegar
+    print("[ConnectionScreen] Iniciando conexão com $deviceName...");
+    bool success = await _bleManager.connectToDevice(device);
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
+    if (success && _bleManager.isReadyToSend) {
+      print(
+          "[ConnectionScreen] Conexão completa! Navegando para RouteEditor...");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(' Conectado a $deviceName!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => RouteEditorScreen(),
+        ),
+      );
+    } else {
+      print(
+          "[ConnectionScreen] Falha na conexão ou serviços não encontrados");
+      print(
+          "[ConnectionScreen]    success=$success, isReadyToSend=${_bleManager.isReadyToSend}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text(' Falha ao conectar. Verifique se o carrinho está ligado.'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   // Desconecta
@@ -392,24 +454,24 @@ ScaffoldMessenger.of(context).removeCurrentSnackBar();
               const SizedBox(height: 10),
 
               // Botão MODO TESTE (remover em produção)
-              TextButton(
-                onPressed: () {
-                  // Pula direto para o RouteEditor sem Bluetooth
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const RouteEditorScreen(),
-                    ),
-                  );
-                },
-                child: Text(
-                  '🧪 Modo Teste (sem Bluetooth)',
-                  style: TextStyle(
-                    color: Colors.orange.shade300,
-                    fontSize: 14,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
+              // TextButton(
+              //   onPressed: () {
+              //     // Pula direto para o RouteEditor sem Bluetooth
+              //     Navigator.of(context).pushReplacement(
+              //       MaterialPageRoute(
+              //         builder: (context) => const RouteEditorScreen(),
+              //       ),
+              //     );
+              //   },
+              //   child: Text(
+              //     '🧪 Modo Teste (sem Bluetooth)',
+              //     style: TextStyle(
+              //       color: Colors.orange.shade300,
+              //       fontSize: 14,
+              //       decoration: TextDecoration.underline,
+              //     ),
+              //   ),
+              // ),
               const SizedBox(height: 10),
             ],
           ),

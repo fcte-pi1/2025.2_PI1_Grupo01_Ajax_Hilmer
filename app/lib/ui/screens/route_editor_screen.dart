@@ -6,12 +6,15 @@ import '../../models/trajectory_command.dart';
 import 'previous_routes_screen.dart';
 import 'route_execution_screen.dart';
 import '../../services/ble_manager.dart';
-import '../../services/api_service.dart';
+import '../../services/wifi_manager.dart';
+import '../../services/debug_logger.dart';
 import '../../service_locator.dart';
 
-// Removemos o parâmetro do construtor
+// Aceita parâmetro opcional para tipo de conexão
 class RouteEditorScreen extends StatefulWidget {
-  const RouteEditorScreen({super.key});
+  final String connectionType; // 'ble' ou 'wifi'
+
+  const RouteEditorScreen({super.key, this.connectionType = 'ble'});
 
   @override
   State<RouteEditorScreen> createState() => _RouteEditorScreenState();
@@ -24,11 +27,29 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   bool _isSending = false; // Controla estado de envio/loading
 
   // MODO TESTE: mude para true para simular sem Bluetooth
-  final bool _testMode = true;
+  final bool _testMode = false;
 
   //Pega as instâncias do locator
   late final BleManager _bleManager = locator<BleManager>();
-  final ApiService _apiService = locator<ApiService>();
+  late final WifiManager _wifiManager = locator<WifiManager>();
+
+  // Getter para verificar se está usando WiFi
+  bool get _isWifiMode => widget.connectionType == 'wifi';
+
+  /// Constrói a string de comandos no formato esperado pelo ESP32
+  /// Exemplo: "ANDAR 100 CM, GIRAR 90 GRAUS DIREITA"
+  String _buildCommandString() {
+    return _commands.map((cmd) {
+      switch (cmd.type) {
+        case CommandType.andar:
+          return 'ANDAR ${cmd.value?.toInt() ?? 0} CM';
+        case CommandType.girar:
+          final angle = (cmd.value ?? 0).toInt();
+          final direction = angle >= 0 ? 'DIREITA' : 'ESQUERDA';
+          return 'GIRAR ${angle.abs()} GRAUS $direction';
+      }
+    }).join(', ');
+  }
 
   @override
   void initState() {
@@ -38,24 +59,42 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   }
 
   void _setupConnectionLostListener() {
-    _bleManager.connectionState.removeListener(_handleConnectionLost);
-    _bleManager.connectionState.addListener(_handleConnectionLost);
+    if (_isWifiMode) {
+      _wifiManager.isConnected.removeListener(_handleWifiConnectionLost);
+      _wifiManager.isConnected.addListener(_handleWifiConnectionLost);
+    } else {
+      _bleManager.connectionState.removeListener(_handleConnectionLost);
+      _bleManager.connectionState.addListener(_handleConnectionLost);
+    }
   }
 
   void _handleConnectionLost() {
     final state = _bleManager.connectionState.value;
-    print("[RouteEditor] Listener: Estado mudou para $state");
+    logger.info('RouteEditor', "Listener: Estado mudou para $state");
     if (state == BluetoothConnectionState.disconnected && mounted) {
-      print("[RouteEditor] Conexão perdida! Voltando...");
-      // ScaffoldMessenger.of(context).showSnackBar(/* ... SnackBar ... */);
+      logger.warning('RouteEditor', "Conexão BLE perdida! Voltando...");
       Navigator.of(context).pop();
       _bleManager.connectionState.removeListener(_handleConnectionLost);
     }
   }
 
+  void _handleWifiConnectionLost() {
+    final isConnected = _wifiManager.isConnected.value;
+    logger.info('RouteEditor', "WiFi Listener: Conectado = $isConnected");
+    if (!isConnected && mounted) {
+      logger.warning('RouteEditor', "Conexão WiFi perdida! Voltando...");
+      Navigator.of(context).pop();
+      _wifiManager.isConnected.removeListener(_handleWifiConnectionLost);
+    }
+  }
+
   @override
   void dispose() {
-    _bleManager.connectionState.removeListener(_handleConnectionLost);
+    if (_isWifiMode) {
+      _wifiManager.isConnected.removeListener(_handleWifiConnectionLost);
+    } else {
+      _bleManager.connectionState.removeListener(_handleConnectionLost);
+    }
     _distanceController.dispose();
     _angleController.dispose();
     super.dispose();
@@ -71,23 +110,40 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
       if (type == CommandType.andar) {
         value = int.tryParse(_distanceController.text);
         controllerToClear = _distanceController;
-        if (value == null || value == 0)
-          errorMessage = "Distância inválida (não pode ser zero ou vazio).";
+
+        // Validações para distância
+        if (value == null) {
+          errorMessage = "Digite um valor numérico para a distância.";
+        } else if (value == 0) {
+          errorMessage = "A distância não pode ser zero.";
+        } else if (value < 0) {
+          errorMessage =
+              "A distância deve ser positiva (use valor positivo em cm).";
+        } else if (value > 1000) {
+          errorMessage = "A distância máxima é 1000 cm (10 metros).";
+        }
       } else if (type == CommandType.girar) {
         value = int.tryParse(_angleController.text);
         controllerToClear = _angleController;
-        if (value == null || value == 0)
-          errorMessage = "Ângulo inválido (não pode ser zero ou vazio).";
+
+        // Validações para ângulo
+        if (value == null) {
+          errorMessage = "Digite um valor numérico para o ângulo.";
+        } else if (value == 0) {
+          errorMessage = "O ângulo não pode ser zero.";
+        } else if (value.abs() > 360) {
+          errorMessage = "O ângulo máximo é 360 graus.";
+        }
       }
 
-      if (errorMessage == null) {
+      if (errorMessage == null && value != null) {
         setState(() {
           _commands.add(TrajectoryCommand(type: type, value: value));
           controllerToClear?.clear();
         });
         FocusScope.of(context).unfocus(); // Esconde o teclado
       } else {
-        _showFeedbackSnackBar(errorMessage, isError: true);
+        _showFeedbackSnackBar(errorMessage ?? "Valor inválido.", isError: true);
         controllerToClear?.clear();
         FocusScope.of(context).unfocus();
       }
@@ -114,7 +170,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
       return;
     }
 
-    // 2. Mostra o Pop-up de Confirmação (AlertDialog)
+    // popup de confirmação
     final bool? wantsToStart = await showDialog<bool>(
       context: context,
       barrierDismissible: true, // Permite fechar clicando fora
@@ -219,61 +275,32 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
       setState(() {
         _isSending = true;
       });
-      final String commandsString =
-          _commands.map((cmd) => cmd.toString()).join(', ');
-      print(
-        "[RouteEditor] Iniciando percurso (confirmado) com string: $commandsString",
-      );
 
-      // Modo teste: pula a API
-      if (!_testMode) {
-        bool savedToApi = await _apiService.saveRoute(commandsString);
-        if (mounted) {
-          _showFeedbackSnackBar(
-            savedToApi
-                ? 'Rota salva no servidor com sucesso.'
-                : 'Falha ao salvar rota no servidor.',
-            isError: !savedToApi,
-          );
-        }
-        await Future.delayed(const Duration(milliseconds: 300));
+      // Monta a string de comandos para o ESP32
+      final String commandString = _buildCommandString();
+
+      // Determina o modo de conexão
+      ConnectionMode mode;
+      if (_testMode) {
+        mode = ConnectionMode.test;
+      } else if (_isWifiMode) {
+        mode = ConnectionMode.wifi;
+      } else {
+        mode = ConnectionMode.ble;
       }
 
-      // Envia para o carrinho via BLE (ou simula em modo teste)
+      // Navega para tela de execução (que vai enviar o comando e aguardar)
+      // Usa pushReplacement para não empilhar telas
       if (mounted) {
-        bool sentToDevice;
-
-        if (_testMode) {
-          // Simula envio bem-sucedido
-          print("[RouteEditor] MODO TESTE: Simulando envio...");
-          await Future.delayed(const Duration(milliseconds: 500));
-          sentToDevice = true;
-        } else {
-          // Envia de verdade via BLE
-          sentToDevice = await _bleManager.sendTrajectory(commandsString);
-        }
-
-        if (sentToDevice) {
-          print("[RouteEditor] Comandos enviados (ou simulados).");
-          // Navega para tela de execução do percurso
-          if (mounted) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => RouteExecutionScreen(
-                  commands: List.from(_commands),
-                  testMode: _testMode, // Passa o modo de teste
-                ),
-              ),
-            );
-          }
-        } else {
-          print("[RouteEditor] Falha ao enviar comandos.");
-          if (mounted)
-            _showFeedbackSnackBar(
-              "Falha ao enviar comandos para o carrinho.",
-              isError: true,
-            );
-        }
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => RouteExecutionScreen(
+              commands: List.from(_commands),
+              connectionMode: mode,
+              commandString: commandString,
+            ),
+          ),
+        );
       }
     } catch (e) {
       print("[RouteEditor] Erro na execução da rota: $e");
@@ -379,7 +406,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInputCommandRow(
+                    _buildDistanceInputRow(
                       label: 'Distância (cm)',
                       controller: _distanceController,
                       onAdd: () => _addCommand(CommandType.andar),
@@ -389,7 +416,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                     const SizedBox(
                       height: 15,
                     ), // Espaço REDUZIDO entre os inputs
-                    _buildInputCommandRow(
+                    _buildAngleInputRow(
                       label: 'Girar (graus)',
                       controller: _angleController,
                       onAdd: () => _addCommand(CommandType.girar),
@@ -401,7 +428,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                       // Adiciona padding para alinhar com o texto do label
                       padding: const EdgeInsets.only(left: 4.0),
                       child: Text(
-                        'Valores positivos: direita | negativos: esquerda',
+                        'Ângulo: positivo = direita | negativo = esquerda',
                         style: textTheme.bodySmall,
                       ),
                     ),
@@ -478,7 +505,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                     : _viewPreviousRoutes, // Desabilita se enviando
                 child: const Text('Visualizar rotas anteriores'),
               ),
-              const SizedBox(height: 20), // Espaço final
+              const SizedBox(height: 40), // Espaço final
             ],
           ),
         ),
@@ -486,13 +513,13 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
     );
   }
 
-  // Constroi a linha: Label + TextField + Botão '+'
-  Widget _buildInputCommandRow({
+  // Constroi a linha para entrada de DISTÂNCIA (apenas valores positivos)
+  Widget _buildDistanceInputRow({
     required String label,
     required TextEditingController controller,
     required VoidCallback onAdd,
     required IconData icon,
-    required bool enabled, // Para desabilitar durante envio
+    required bool enabled,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -507,36 +534,86 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
             Expanded(
               child: TextField(
                 controller: controller,
-                enabled: enabled, // Habilita/Desabilita o campo
+                enabled: enabled,
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
-                ], // Apenas números e '-'
-                keyboardType: const TextInputType.numberWithOptions(
-                  signed: true,
-                ), // Teclado numérico
+                  FilteringTextInputFormatter
+                      .digitsOnly, // APENAS números positivos
+                ],
+                keyboardType: TextInputType.number, // Teclado numérico simples
                 decoration: InputDecoration(
-                  // Usa estilo do tema
-                  hintText: '0', // Placeholder
-                  prefixIcon: Icon(icon, size: 20), // Ícone dentro do campo
+                  hintText: 'Ex: 100',
+                  prefixIcon: Icon(icon, size: 20),
+                  suffixText: 'cm',
                 ),
-                style: const TextStyle(
-                  fontSize: 16,
-                ), // Tamanho da fonte digitada
+                style: const TextStyle(fontSize: 16),
               ),
             ),
             const SizedBox(width: 10),
-            // Botão Adicionar (+)
             IconButton(
               style: IconButton.styleFrom(
-                backgroundColor: const Color(0xFF00D4FF), // Ciano
-                foregroundColor: const Color(0xFF0D0F14), // Preto
+                backgroundColor: const Color(0xFF00D4FF),
+                foregroundColor: const Color(0xFF0D0F14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 padding: const EdgeInsets.all(14),
               ),
               icon: const Icon(Icons.add),
-              // Desabilita se o input estiver desabilitado
+              onPressed: enabled ? onAdd : null,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Constroi a linha para entrada de ÂNGULO (permite valores negativos)
+  Widget _buildAngleInputRow({
+    required String label,
+    required TextEditingController controller,
+    required VoidCallback onAdd,
+    required IconData icon,
+    required bool enabled,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: controller,
+                enabled: enabled,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                      RegExp(r'^-?\d*')), // Números e sinal negativo
+                ],
+                keyboardType:
+                    const TextInputType.numberWithOptions(signed: true),
+                decoration: InputDecoration(
+                  hintText: 'Ex: 90 ou -90',
+                  prefixIcon: Icon(icon, size: 20),
+                  suffixText: '°',
+                ),
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+            const SizedBox(width: 10),
+            IconButton(
+              style: IconButton.styleFrom(
+                backgroundColor: const Color(0xFF00D4FF),
+                foregroundColor: const Color(0xFF0D0F14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.all(14),
+              ),
+              icon: const Icon(Icons.add),
               onPressed: enabled ? onAdd : null,
             ),
           ],

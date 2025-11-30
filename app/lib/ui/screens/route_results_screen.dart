@@ -282,7 +282,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen>
   }
 
   Widget _buildPathVisualization() {
-    // Visualização animada do caminho baseada nos comandos reais
+    //visualizacao do caminho baseada nos comandos reais
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
@@ -298,7 +298,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen>
   }
 }
 
-// Painter customizado para desenhar o caminho baseado nos comandos reais
+//painter customizado para desenhar o caminho baseado nos comandos reais
 class PathPainter extends CustomPainter {
   final List<TrajectoryCommand>? commands;
   final double animationProgress; // 0.0 a 1.0 para animar o desenho
@@ -437,7 +437,6 @@ class PathPainter extends CustomPainter {
     final pathWidth = maxX - minX;
     final pathHeight = maxY - minY;
 
-    // Adiciona margem (20% do tamanho do canvas)
     final margin = 0.15;
     final availableWidth = size.width * (1 - 2 * margin);
     final availableHeight = size.height * (1 - 2 * margin);

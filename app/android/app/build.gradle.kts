@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36  // Atualizado para Android 15 (requerido por flutter_blue_plus)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -20,14 +20,11 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        applicationId = "com.fctepi1.carrinho_ajax"  // ID único do app
+        minSdk = flutter.minSdkVersion  // Android 5.0+ (compatível com BLE)
+        targetSdk = 36  // Android 15
+        versionCode = 1
+        versionName = "1.0.0"
     }
 
     buildTypes {
