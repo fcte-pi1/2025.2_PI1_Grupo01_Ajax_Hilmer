@@ -1,17 +1,46 @@
 // lib/main.dart
 
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'ui/screens/connection_screen.dart';
-import 'service_locator.dart'; 
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'ui/screens/connection_type_screen.dart';
+import 'service_locator.dart';
 
-Future<void> main() async { 
+Future<void> main() async {
   // Garantir que o Flutter esteja inicializado
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Chamar setup ANTES do runApp()
-  await setupLocator(); 
-  
+  await setupLocator();
+
+  // Solicita permissões de Bluetooth no Android
+  if (Platform.isAndroid) {
+    await _requestBluetoothPermissions();
+  }
+
   runApp(const MyApp()); //Inicia o widget principal MyApp
+}
+
+/// Solicita todas as permissões necessárias para Bluetooth no Android 12+
+Future<void> _requestBluetoothPermissions() async {
+  try {
+    // Verifica se o adaptador Bluetooth está ligado
+    if (await FlutterBluePlus.isSupported == false) {
+      print("[Main] Bluetooth não suportado neste dispositivo");
+      return;
+    }
+
+    // Liga o Bluetooth se estiver desligado (isso também solicita permissões)
+    if (await FlutterBluePlus.adapterState.first != BluetoothAdapterState.on) {
+      print("[Main] Bluetooth desligado. Tentando ligar...");
+      // No Android, isso abre o diálogo de permissão
+      await FlutterBluePlus.turnOn();
+    }
+
+    print("[Main] ✅ Bluetooth pronto!");
+  } catch (e) {
+    print("[Main] Erro ao configurar Bluetooth: $e");
+  }
 }
 
 //Herda de `StatelessWidget`...
@@ -134,7 +163,7 @@ class MyApp extends StatelessWidget {
       ),
 
       //home mostra qual tela vai ser iniciada ao abrir o app
-      home: const ConnectionScreen(), // Aponta para a tela de conexão
+      home: const ConnectionTypeScreen(), // Tela de seleção: BLE ou WiFi
     );
   }
 }

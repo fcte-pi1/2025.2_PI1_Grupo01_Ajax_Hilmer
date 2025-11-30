@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
-import '../../service_locator.dart'; 
+import '../../service_locator.dart';
+import '../../models/trajectory_command.dart';
+import 'route_results_screen.dart';
 
 class PreviousRoutesScreen extends StatefulWidget {
   const PreviousRoutesScreen({super.key});
@@ -10,168 +11,116 @@ class PreviousRoutesScreen extends StatefulWidget {
 }
 
 class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
-  
   final ApiService _apiService = locator<ApiService>();
+  final ScrollController _scrollController = ScrollController();
+  final List<Map<String, dynamic>> _routes = [];
 
-  final ScrollController _scrollController =
-      ScrollController(); // Controlador do scroll
-  final List<Map<String, dynamic>> _routes = []; // Lista que acumula as rotas
-
-  bool _isLoading = false; // Indica o carregamento inicial
-  bool _isLoadingMore =
-      false; // Indica o carregamento de mais itens (no final da lista)
-  bool _hasMore = true; // Indica se ainda há mais dados para buscar na API
-  int _offset = 0; // O "ponto de partida" da próxima busca
-  final int _limit = 20; // Quantos itens buscar por vez
-  String? _error; // Para armazenar mensagens de erro
+  bool _isLoading = false;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  int _offset = 0;
+  final int _limit = 10;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
-    // Inicia a primeira busca
-    _fetchInitialRoutes();
-    // Adiciona um listener no ScrollController para detectar o fim da página
+    _fetchInitialData();
     _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll); // Limpa o listener
-    _scrollController.dispose(); // Limpa o controller
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     super.dispose();
   }
 
-  // Listener do Scroll: chamado toda vez que o usuário rola
   void _onScroll() {
-
-    // Verifica se estamos perto do fim da lista (ex: 90% rolado)
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.9) {
-      // Se sim, busca mais rotas
-      _fetchMoreRoutes();
+      _fetchMoreData();
     }
   }
 
-  // Busca a primeira página de rotas
-  Future<void> _fetchInitialRoutes() async {
-
-    // Evita múltiplas chamadas
+  Future<void> _fetchInitialData() async {
     if (_isLoading) return;
 
-    print("[PreviousRoutes] Buscando rotas iniciais...");
     setState(() {
-      _isLoading = true; // Ativa o loading principal
-      _error = null; // Limpa erros antigos
+      _isLoading = true;
+      _error = null;
     });
 
     try {
-      final newRoutes = await _apiService.getPreviousRoutes(
+      final routes = await _apiService.getPreviousRoutes(
         limit: _limit,
         offset: 0,
       );
-      if (!mounted) return; // Garante que a tela ainda existe
+
+      if (!mounted) return;
       setState(() {
-        _routes.clear(); // Limpa a lista antes de adicionar os primeiros
-        _routes.addAll(newRoutes);
-        _offset = newRoutes.length; // Atualiza o offset
-        _hasMore =
-            newRoutes.length ==
-            _limit; // Se recebeu menos que o limite, não há mais
+        _routes.clear();
+        _routes.addAll(routes);
+        _offset = routes.length;
+        _hasMore = routes.length == _limit;
         _isLoading = false;
       });
     } catch (e) {
-      print("[PreviousRoutes] Erro ao buscar rotas iniciais: $e");
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _error = e.toString(); // Salva o erro para mostrar na UI
+        _error = e.toString();
       });
     }
   }
 
-  // Busca as próximas páginas de rotas
-  Future<void> _fetchMoreRoutes() async {
-  
-    // Condições de guarda: não busca se já estiver buscando, ou se não houver mais dados
+  Future<void> _fetchMoreData() async {
     if (_isLoading || _isLoadingMore || !_hasMore) return;
 
-    print("[PreviousRoutes] Buscando mais rotas... Offset: $_offset");
-    setState(() {
-      _isLoadingMore = true; // Ativa o loading *secundário* (no fim da lista)
-    });
+    setState(() => _isLoadingMore = true);
 
     try {
-      final newRoutes = await _apiService.getPreviousRoutes(
+      final routes = await _apiService.getPreviousRoutes(
         limit: _limit,
         offset: _offset,
       );
+
       if (!mounted) return;
       setState(() {
-        _routes.addAll(newRoutes); // Adiciona os novos itens à lista existente
-        _offset += newRoutes.length; // Atualiza o offset
-        _hasMore = newRoutes.length == _limit; // Verifica se ainda há mais
+        _routes.addAll(routes);
+        _offset += routes.length;
+        _hasMore = routes.length == _limit;
         _isLoadingMore = false;
       });
     } catch (e) {
-      print("[PreviousRoutes] Erro ao buscar mais rotas: $e");
       if (!mounted) return;
-      setState(() {
-        _isLoadingMore = false;
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erro ao carregar mais rotas.'),
-            backgroundColor: Colors.orange,
-          ),
-        );
-      }
+      setState(() => _isLoadingMore = false);
     }
   }
 
-  Future<void> _refreshRoutes() async {
-  
-    print("[PreviousRoutes] Atualizando rotas...");
-    // Reseta o estado e busca a primeira página novamente
+  Future<void> _refresh() async {
     _offset = 0;
     _hasMore = true;
     _routes.clear();
-    await _fetchInitialRoutes();
-  }
-
-  // Formata a data (igual antes)
-  String _formatDateTime(String? dateTimeString) {
-  
-    if (dateTimeString == null || dateTimeString.isEmpty)
-      return 'Data indisponível';
-    try {
-      final dateTime = DateTime.parse(dateTimeString).toLocal();
-      return DateFormat('dd/MM/yyyy HH:mm', 'pt_BR').format(dateTime);
-    } catch (e) {
-      return 'Data inválida';
-    }
+    await _fetchInitialData();
   }
 
   @override
   Widget build(BuildContext context) {
- 
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Rotas anteriores'), centerTitle: true),
-      body: _buildBody(textTheme),
+      appBar: AppBar(
+        title: const Text('Rotas Anteriores'),
+        centerTitle: true,
+      ),
+      body: _buildBody(),
     );
   }
 
-  // Widget auxiliar para construir o corpo da tela
-  Widget _buildBody(TextTheme textTheme) {
-  
-    // Estado 1: Carregamento Inicial
+  Widget _buildBody() {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // Estado 2: Erro no Carregamento Inicial
     if (_error != null) {
       return Center(
         child: Padding(
@@ -179,25 +128,21 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error_outline, color: Colors.redAccent, size: 50),
+              const Icon(Icons.error_outline,
+                  color: Colors.redAccent, size: 50),
               const SizedBox(height: 15),
-              Text(
-                'Erro ao carregar rotas.\nVerifique sua conexão com a API.',
+              const Text(
+                'Erro ao carregar rotas.\nVerifique sua conexão.',
                 textAlign: TextAlign.center,
-                style: textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+                style: TextStyle(color: Colors.redAccent),
               ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey.shade700,
                   foregroundColor: Colors.white,
-                  fixedSize: null,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
                 ),
-                onPressed: _refreshRoutes,
+                onPressed: _refresh,
                 icon: const Icon(Icons.refresh, size: 20),
                 label: const Text('Tentar Novamente'),
               ),
@@ -207,28 +152,24 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
       );
     }
 
-    // Estado 3: Sucesso, mas lista vazia
     if (_routes.isEmpty) {
       return RefreshIndicator(
-        onRefresh: _refreshRoutes,
+        onRefresh: _refresh,
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Center(
+                child: const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.history_toggle_off,
-                        size: 60,
-                        color: Colors.white24,
-                      ),
-                      const SizedBox(height: 15),
+                      Icon(Icons.history_toggle_off,
+                          size: 60, color: Colors.white24),
+                      SizedBox(height: 15),
                       Text(
-                        'Nenhuma rota anterior foi salva.',
+                        'Nenhuma rota anterior encontrada.',
                         style: TextStyle(color: Colors.white54),
                       ),
                     ],
@@ -241,15 +182,13 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
       );
     }
 
-    // Estado 4: Sucesso com dados, exibe a lista
     return RefreshIndicator(
-      onRefresh: _refreshRoutes,
+      onRefresh: _refresh,
       child: ListView.builder(
-        controller: _scrollController, // Conecta o controlador de scroll
+        controller: _scrollController,
         padding: const EdgeInsets.all(15),
         itemCount: _routes.length + (_hasMore ? 1 : 0),
         itemBuilder: (context, index) {
-          // Se for o último item E ainda houver mais dados, mostra o loading
           if (index == _routes.length) {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -257,29 +196,20 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
             );
           }
 
-          // Se for um item normal da lista
           final route = _routes[index];
           final routeId = route['id'] ?? (index + 1);
-          final createdAt = _formatDateTime(route['created_at'] as String?);
-          final commands =
-              route['commands'] as String? ?? 'Comandos indisponíveis';
+          final commands = route['commands'] as String? ?? '';
 
-          // Constrói o Card (igual antes)
           return Card(
             margin: const EdgeInsets.only(bottom: 12),
             color: const Color(0xFF191C23),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
-              side: BorderSide(
-                color: const Color(0xFF33DDFF),
-                width: 1,
-              ),
+              side: const BorderSide(color: Color(0xFF33DDFF), width: 1),
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
-              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               title: Text(
                 'Rota $routeId',
                 style: const TextStyle(
@@ -288,47 +218,119 @@ class _PreviousRoutesScreenState extends State<PreviousRoutesScreen> {
                   fontSize: 17,
                 ),
               ),
-              trailing: Text(
-                createdAt,
-                style: const TextStyle(color: Colors.white70, fontSize: 13),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 5.0),
+                child: Text(
+                  commands.isNotEmpty ? commands : 'Sem comandos',
+                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              // subtitle: Padding(
-              //   padding: const EdgeInsets.only(top: 5.0),
-              //   child: Text(
-              //     commands,
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //       fontSize: 12,
-              //     ),
-              //     maxLines: 1,
-              //     overflow: TextOverflow.ellipsis,
-              //   ),
-              // ),
-              onTap: () {
-                print('[PreviousRoutes] Rota selecionada: ID $routeId');
-                ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'ID: $routeId\nComandos: $commands',
-                      maxLines: 5,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    duration: const Duration(seconds: 5),
-                    action: SnackBarAction(
-                      label: 'FECHAR',
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      },
-                    ),
-                  ),
-                );
-              },
+              trailing: const Icon(Icons.chevron_right, color: Colors.white54),
+              onTap: () => _navigateToResults(routeId, commands),
               splashColor: const Color(0xFF33DDFF),
             ),
           );
         },
       ),
     );
+  }
+
+  Future<void> _navigateToResults(int routeId, String commands) async {
+    // Mostra loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      // Busca telemetrias e filtra pela rota
+      final telemetries =
+          await _apiService.getTelemetries(limit: 100, offset: 0);
+      final telemetry = telemetries.firstWhere(
+        (t) => t['route_id'] == routeId,
+        orElse: () => <String, dynamic>{},
+      );
+
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Fecha loading
+
+      if (telemetry.isNotEmpty) {
+        final distance =
+            (telemetry['distance_traveled'] as num?)?.toDouble() ?? 0.0;
+        final speed = (telemetry['average_speed'] as num?)?.toDouble() ?? 1.0;
+        final time = speed > 0 ? distance / speed : 0.0;
+        final current =
+            (telemetry['average_current'] as num?)?.toDouble() ?? 0.0;
+        final energy =
+            (telemetry['energy_consumed'] as num?)?.toDouble() ?? 0.0;
+
+        final commandList = _parseCommands(commands);
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => RouteResultsScreen(
+              totalTime: time,
+              totalDistance: distance,
+              commands: commandList,
+              averageSpeed: speed,
+              averageCurrent: current,
+              operatingVoltage: 16.0,
+              energyConsumed: energy,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Nenhuma execução encontrada para esta rota'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erro ao buscar dados da rota'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  List<TrajectoryCommand> _parseCommands(String commandsStr) {
+    final commands = <TrajectoryCommand>[];
+    if (commandsStr.isEmpty) return commands;
+
+    final parts = commandsStr.toUpperCase().split(',');
+    for (final part in parts) {
+      final trimmed = part.trim();
+      final tokens = trimmed.split(RegExp(r'\s+'));
+
+      if (tokens.isEmpty) continue;
+
+      if (tokens[0] == 'ANDAR' && tokens.length >= 2) {
+        final value = int.tryParse(tokens[1]);
+        if (value != null) {
+          commands
+              .add(TrajectoryCommand(type: CommandType.andar, value: value));
+        }
+      } else if (tokens[0] == 'GIRAR' && tokens.length >= 2) {
+        final value = int.tryParse(tokens[1]);
+        if (value != null) {
+          final isLeft = trimmed.contains('ESQUERDA');
+          commands.add(TrajectoryCommand(
+            type: CommandType.girar,
+            value: isLeft ? -value : value,
+          ));
+        }
+      }
+    }
+
+    return commands;
   }
 }

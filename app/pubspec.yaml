@@ -17,6 +17,8 @@ dependencies:
 
   get_it: ^7.6.7       # Para o Service Locator (Singleton)
   flutter_dotenv: ^5.1.0 # Para carregar o .env
+  shared_preferences: ^2.2.2 # Para cache offline
+  connectivity_plus: ^5.0.2  # Para detectar conexão com internet
 
 
 dev_dependencies:
@@ -26,6 +28,15 @@ dev_dependencies:
   mockito: ^5.4.4
   build_runner: ^2.4.0
   coverage: ^1.15.0
+  flutter_launcher_icons: ^0.14.1
+
+# Configuração do ícone do app
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icon/icon.png"
 
 flutter:
   uses-material-design: true
