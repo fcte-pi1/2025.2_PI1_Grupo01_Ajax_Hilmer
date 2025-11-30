@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from api.models import StatusState
@@ -26,6 +28,9 @@ class TelemetrySchema(BaseModel):
 
 class TelemetryPublic(TelemetrySchema):
     id: int
+    route_id: int
+    route: RoutePublic
+    created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
 
