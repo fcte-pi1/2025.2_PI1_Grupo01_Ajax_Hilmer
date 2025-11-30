@@ -46,3 +46,5 @@ class Telemetry:
         init=False, server_default=func.now()
     )
     route_id: Mapped[int] = mapped_column(ForeignKey('routes.id'))
+
+    route: Mapped[Route] = relationship(init=False, lazy='selectin')
