@@ -28,14 +28,13 @@ O backlog do produto foi construído utilizando o formato de Histórias de Usuá
 | ID    | Título da História                  | Prioridade (MoSCoW) | História de Usuário (Descrição)                                                                                                                                              |
 | :---- | :---------------------------------- | :------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **-** | **Épico 1: Gerenciamento e Execução de Trajetória** | **-** | **-** |
-| HU-01 | Programação de Trajetória           | Must Have           | Como um professor/operador, eu quero criar uma trajetória em uma interface gráfica, definindo uma sequência de comandos, para que eu possa programar o percurso que o carrinho deve seguir. |
-| HU-02 | Execução de Trajetória Programada   | Must Have           | Como um professor/operador, eu quero que o carrinho execute fielmente a sequência de comandos enviada, para que ele complete qualquer um dos três tipos de percurso definidos no desafio de forma autônoma. |
-| HU-03 | Depósito Automático da Carga        | Must Have           | Como um professor/operador, eu quero que o carrinho deposite a carga automaticamente na caixa acolchoada ao final da trajetória, para que o objetivo da entrega seja cumprido sem intervenção humana. |
-| **-** | **Épico 2: Coleta, Análise e Usabilidade** | **-** | **-** |
-| HU-04 | Registro de Dados da Missão         | Must Have           | Como um professor/operador, eu quero que o sistema registre a trajetória percorrida e o tempo gasto durante a execução, para que eu possa coletar dados para análise de desempenho. |
-| HU-05 | Persistência de Dados da Missão     | Must Have           | Como um professor/operador, eu quero que os dados de trajetória e tempo sejam salvos em um banco de dados, para que os resultados de diferentes execuções possam ser armazenados permanentemente. |
-| HU-06 | Visualização de Dados para Análise  | Should Have         | Como um professor/operador, eu quero uma tela no software para visualizar os dados de desempenho das missões, para que eu possa fazer a análise dos resultados.            |
-| HU-07 | Aprimoramento da Usabilidade        | Could Have          | Como um professor/operador, eu quero que a interface gráfica seja aprimorada com mais recursos visuais e fluxos simplificados, para que a programação da trajetória seja mais fácil e intuitiva. |
+| HU-01 | Programação de Trajetória           | Must Have           | Como um professor/operador, eu quero criar uma trajetória no aplicativo, definindo uma sequência de comandos, para que eu possa programar o percurso que o carrinho deve seguir. |
+| HU-02 | Envio de Trajetória Programada   | Must Have           | Como um professor/operador, eu quero que o aplicativo envie ao carrinho a rota programada para que ele execute fielmente os comandos enviados. |
+| **-** | **Épico 2: Coleta e Análise** | **-** | **-** |
+| HU-03 | Registro de Dados da Missão         | Must Have           | Como um professor/operador, eu quero que o sistema registre a trajetória percorrida e os dados da execução, para que eu possa coletar dados para análise de desempenho. |
+| HU-04 | Persistência de Dados da Missão     | Must Have           | Como um professor/operador, eu quero que os dados de trajetória(trajeto realizado, tempo da missão, distância percorrida, corrente média e tensão da operação) sejam salvos em um banco de dados, para que os resultados possam ser armazenados e visualizados posteriormente. |
+| HU-05 | Visualização da Rota  | Should Have         | Como um professor/operador, eu quero que o aplicativo mostre um gráfico com a rota executada, para que eu possa ver o trajeto realizado.           |
+| HU-06 | Visualização de Dados para Análise        | Must Have          | Como um professor/operador, eu quero que o aplicativo permita visualizar os dados de desempenho das missões, para que eu possa fazer a análise dos resultados. |
 
 ### Critérios de Aceite das Histórias de Usuário
 
@@ -43,41 +42,35 @@ Abaixo estão detalhados os critérios de aceite para cada História de Usuário
 
 ### HU-01: Programação de Trajetória
 
-* **Dado que** a interface gráfica está aberta, **quando** eu acesso a área de programação, **então** devo ver botões para adicionar comandos de "Andar (cm)" e "Girar (graus)".
+* **Dado que** a interface gráfica está aberta, **quando** eu acesso a área de programação de rotas, **então** devo ver botões para adicionar comandos de "Andar (cm)" e "Girar (graus)".
 * **Dado que** adicionei comandos, **quando** eu os organizo na tela, **então** devo poder ver a sequência completa da trajetória.
+* **Dado que** adicionei comandos, **quando** eu os organizo na tela, **então** devo poder excluir aquele comando.
+
+### HU-02: Envio de Trajetória Programada
+
 * **Dado que** a trajetória está pronta, **quando** eu clico no botão "Enviar ao Carrinho", **então** os dados devem ser transmitidos via tecnologia sem fio.
 * **Dado que** os dados foram enviados, **quando** a transmissão é bem-sucedida, **então** devo receber uma mensagem de confirmação na tela (ex: "Trajetória enviada com sucesso!").
+* **Dado que** os dados foram enviados, **quando** a transmissão é bem-sucedida, **então** devo ir para uma tela de carregamento, aguardando uma resposta do carrinho sobre o status da trajetória.
 
-### HU-02: Execução de Trajetória Programada
+### HU-03: Registro de Dados da Missão
 
-* **Dado que** o carrinho recebeu uma sequência de comandos, **quando** o comando de início é acionado, **então** ele deve executar o primeiro comando da lista.
-* **Dado que** um comando foi concluído, **quando** existem mais comandos na lista, **então** o carrinho deve executar o próximo comando sequencialmente.
-* **Dado que** o último comando foi executado, **quando** a lista de comandos termina, **então** o carrinho deve parar completamente.
+* **Dado que** a execução foi iniciada, **quando** a missão termina, **então** o software deve ter recebido os dados da missão(Tempo, Distância, Corrente Média e Tensão da Operação).
 
-### HU-03: Depósito Automático da Carga
+### HU-04: Persistência de Dados da Missão
 
-* **Dado que** o carrinho parou após o último comando da trajetória, **quando** ele identifica o fim da missão, **então** o sistema de software deve acionar o comando para o hardware de depósito.
-* **Dado que** o mecanismo de depósito foi acionado, **quando** o ciclo de entrega termina, **então** o software deve garantir que o mecanismo retorne à sua posição inicial de repouso.
+* **Dado que** uma missão foi concluída com sucesso, **quando** o carrinho está em estado de repouso, **então** ele deve transmitir o pacote de dados para o aplicativo.
+* **Dado que** o aplicativo recebeu os dados, **quando** os dados são válidos, **então** eles devem ser inseridos em uma nova entrada no banco de dados, associada a um identificador único de missão.
 
-### HU-04: Registro de Dados da Missão
+### HU-05: Visualização da Rota
 
-* **Dado que** a execução da trajetória foi iniciada, **quando** o carrinho está em movimento, **então** o software embarcado deve registrar periodicamente sua posição estimada (telemetria).
-* **Dado que** a execução foi iniciada, **quando** a missão termina, **então** o software deve ter calculado e armazenado o tempo total decorrido.
-
-### HU-05: Persistência de Dados da Missão
-
-* **Dado que** uma missão foi concluída, **quando** o carrinho está em estado de repouso, **então** ele deve transmitir o pacote de dados (trajetória e tempo) para o sistema central.
-* **Dado que** o sistema central recebeu os dados, **quando** os dados são válidos, **então** eles devem ser inseridos em uma nova entrada no banco de dados, associada a um identificador único de missão.
+* **Dado que** uma missão foi concluída com sucesso, **quando** eu recebo a confirmação de que foi concluída com êxito, **então** devo ver na tela uma representação visual da trajetória percorrida.
+* **Dado que** estou com o aplicativo aberto, **quando** eu acesso a seção "Visualizar rotas anteriores", **então** devo ver uma lista de missões executadas, ordenadas da mais recente para a mais antiga.
+* **Dado que** selecionei uma rota da lista, **quando** os dados são carregados, **então** devo ver na tela uma representação visual da trajetória percorrida.
 
 ### HU-06: Visualização de Dados para Análise
 
-* **Dado que** estou na interface gráfica, **quando** eu acesso a seção "Resultados", **então** devo ver uma lista de missões executadas (p.ex., por data e hora).
-* **Dado que** selecionei uma missão da lista, **quando** os dados são carregados, **então** devo ver na tela uma representação visual da trajetória percorrida e o tempo total gasto.
+* **Dado que** estou vendo os dados de uma rota, **quando** eu acesso a seção "Ver Análise detalhada", **então** devo ver os dados específicos da missão
 
-### HU-07: Aprimoramento da Usabilidade
-
-* **Dado que** estou programando a trajetória, **quando** eu olho para a interface, **então** os botões e comandos são representados por ícones intuitivos.
-* **Dado que** ocorreu um erro (ex: falha de comunicação), **quando** o sistema me notifica, **então** a mensagem de erro deve ser clara e amigável.
 
 ## Requisitos Não-Funcionais
 
@@ -152,3 +145,16 @@ Com essa abordagem, o sistema permite não apenas a avaliação quantitativa das
 <center>
 <a href="https://www.figma.com/design/Ghq0pZ1dvuv1xNkvyMa43w/ProjetoSoftwarePI1?node-id=0-1&p=f&t=3yl7xwVXyUSETxdb-0">Clique aqui para acessar o protótipo</a>
 </center>
+
+### Relação com as Histórias de Usuário
+
+Abaixo, segue a relação das telas do protótipo com as Histórias de Usuário:
+
+| ID da US | Descrição da História de Usuário | Protótipo Relacionado |
+| :--- | :--- | :--- |
+| **HU-01** | Como um professor/operador, eu quero criar uma trajetória no aplicativo, definindo uma sequência de comandos, para que eu possa programar o percurso que o carrinho deve seguir. | ![alt text](image1.png) |
+| **HU-02** | Como um professor/operador, eu quero que o aplicativo envie ao carrinho a rota programada para que ele execute fielmente os comandos enviados. |![alt text](image2.png) |
+| **HU-03** | Como um professor/operador, eu quero que o sistema registre a trajetória percorrida e os dados da execução, para que eu possa coletar dados para análise de desempenho. | N/A (Função de **Backend/Firmware**) |
+| **HU-04** | Como um professor/operador, eu quero que os dados de trajetória(trajeto realizado, tempo da missão, distância percorrida, corrente média e tensão da operação) sejam salvos em um banco de dados, para que os resultados possam ser armazenados e visualizados posteriormente. | ![alt text](image4.png) |
+| **HU-05** | Como um professor/operador, eu quero que o aplicativo mostre um gráfico com a rota executada, para que eu possa ver o trajeto realizado. | ![alt text](image3.png) |
+| **HU-06** | Como um professor/operador, eu quero que o aplicativo permita visualizar os dados de desempenho das missões, para que eu possa fazer a análise dos resultados. | ![alt text](image4.png) |
